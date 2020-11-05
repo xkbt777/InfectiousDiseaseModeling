@@ -1,37 +1,16 @@
-## Welcome to GitHub Pages
+## Summary
 
-You can use the [editor on GitHub](https://github.com/xkbt777/InfectiousDiseaseModeling/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+We are going to implement an MPI parallel program that models infectious disease spreading in a big crowd. The basic version would apply a random wandering individual movement model and Gaussian Distribution on the distance between individuals to calculate the infectious rate, combined with a concurrent R-tree to optimize searching individuals within a specific area. A Social Force based movement model and danger area assumption are two feasible extensions on this topic.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+## Proposal
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+You could find our project proposal use the link [here](https://docs.google.com/document/d/1tsleYAoje3bNcmz6uF-RaMOxEU0FN9mPoS9msJkUcrA/edit?usp=sharing).
 
-```markdown
-Syntax highlighted code block
+## Reference
 
-# Header 1
-## Header 2
-### Header 3
+1. Individual space–time activity-based modelling of infectious disease transmission within a city. [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2607451/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2607451/)
 
-- Bulleted
-- List
+2. Eubank et al., Modelling disease outbreaks in realistic urban social networks, Nature 429, 180-184. [http://www.nature.com/nature/journal/v429/n6988/full/nature02541.html](http://www.nature.com/nature/journal/v429/n6988/full/nature02541.html)
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/xkbt777/InfectiousDiseaseModeling/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+3. Simulating dynamical features of escape panic. [https://www.nature.com/articles/35035023](https://www.nature.com/articles/35035023)
