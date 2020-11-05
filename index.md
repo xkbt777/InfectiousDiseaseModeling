@@ -14,3 +14,7 @@ You could find our project proposal use the link [here](https://docs.google.com/
 2. Eubank et al., Modelling disease outbreaks in realistic urban social networks, Nature 429, 180-184. [http://www.nature.com/nature/journal/v429/n6988/full/nature02541.html](http://www.nature.com/nature/journal/v429/n6988/full/nature02541.html)
 
 3. Simulating dynamical features of escape panic. [https://www.nature.com/articles/35035023](https://www.nature.com/articles/35035023)
+
+4. A study of concurrent operations on R-trees. [https://www.sciencedirect.com/science/article/pii/S0020025596002198](https://www.sciencedirect.com/science/article/pii/S0020025596002198)
+
+5. High-Concurrency Locking in R-Trees. [https://dsf.berkeley.edu/papers/vldb95-rtree.pdf](https://dsf.berkeley.edu/papers/vldb95-rtree.pdf)
