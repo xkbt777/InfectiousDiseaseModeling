@@ -5,6 +5,8 @@
 #ifndef INFECTIOUSDISEASEMODELING_R_TREE_H
 #define INFECTIOUSDISEASEMODELING_R_TREE_H
 
+#include "util.h"
+
 #define MAX_ENTRY_SIZE 10
 
 #define INTERNAL 0
@@ -30,6 +32,9 @@ typedef struct {
 }node_t;
 
 typedef struct {
-  size_t id;
-}object_t;
+  node_t *root;
+}r_tree_t;
+
+size_t search(node_t *node, rectangle_t area, object_t ***objects);
+
 #endif //INFECTIOUSDISEASEMODELING_R_TREE_H
