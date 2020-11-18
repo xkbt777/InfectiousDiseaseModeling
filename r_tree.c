@@ -92,7 +92,7 @@ node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, obje
             min_idx = 0;
         }
 
-        node_t* res = choose_and_insert(node->entries[min_idx], node, o_area);
+        node_t* res = choose_and_insert(node->entries[min_idx], node, o_area, object);
         o_area = res->rectangle;
     }
 
