@@ -25,6 +25,6 @@ typedef struct {
   node_t *root;
 }r_tree_t;
 
-size_t search(node_t *node, rectangle_t area, object_t **objects);
+size_t search(node_t *node, rectangle_t area, object_t ***objects);
 
 #endif //INFECTIOUSDISEASEMODELING_R_TREE_H

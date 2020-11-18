@@ -5,9 +5,9 @@
 #include "r_tree.h"
 #include "util.h"
 
-size_t search(node_t *node, rectangle_t area, object_t **objects) {
+size_t search(node_t *node, rectangle_t area, object_t ***objects) {
   if (node == NULL) {
-    objects = NULL;
+    *objects = NULL;
     return 0;
   }
 
@@ -18,16 +18,18 @@ size_t search(node_t *node, rectangle_t area, object_t **objects) {
     size_t size_sum = 0;
 
     for (int i = 0; i < node->node_size; i++) {
-      sizes[i] = search(node->entries[i], area, object_pointers[i]);
-      size_sum += sizes[i];
+      if (intersect(node->rectangle, area)) {
+        sizes[i] = search(node->entries[i], area, &(object_pointers[i]));
+        size_sum += sizes[i];
+      }
     }
 
-    objects = (object_t **) calloc(size_sum, sizeof(object_t *));
+    *objects = (object_t **) calloc(size_sum, sizeof(object_t *));
     size_sum = 0;
 
     for (int i = 0; i < node->node_size; i++) {
       if (sizes[i] > 0) {
-        memcpy(objects + size_sum, object_pointers[i], sizes[i] * sizeof(object_t *));
+        memcpy((*objects) + size_sum, object_pointers[i], sizes[i] * sizeof(object_t *));
         size_sum += sizes[i];
       }
       free(object_pointers[i]);
@@ -42,14 +44,16 @@ size_t search(node_t *node, rectangle_t area, object_t **objects) {
   size_t size_sum = 0;
 
   for (int i = 0; i < node->node_size; i++) {
+    printf("Object ID: %ld\n", node->entries[i]->object->id);
+    printf("outcome: %d\n", intersect(node->entries[i]->rectangle, area));
     if (intersect(node->entries[i]->rectangle, area)) {
       objects_pointers[size_sum] = node->entries[i]->object;
       size_sum += 1;
     }
   }
-  objects = (object_t **) calloc(size_sum, sizeof(object_t *));
+  *objects = (object_t **) calloc(size_sum, sizeof(object_t *));
 
-  memcpy(objects, objects_pointers, size_sum * sizeof(object_t *));
+  memcpy(*objects, objects_pointers, size_sum * sizeof(object_t *));
   return size_sum;
 }
 
@@ -110,8 +114,9 @@ int main() {
 
   object_t **object_pointer = NULL;
 
-  size_t count = search(r_tree.root, init(1, 1, 4, 4), object_pointer);
+  size_t count = search(r_tree.root, init(3, 5, 6, 6), &object_pointer);
 
+  printf("Object Founded:\n");
   for (int i = 0; i < count; i++) {
     printf("Object Id : %ld\n", object_pointer[i]->id);
   }
