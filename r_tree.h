@@ -27,5 +27,7 @@ typedef struct {
 
 size_t search(node_t *node, rectangle_t area, object_t ***objects);
 void insert(node_t *root, object_t *object, rectangle_t o_area); // return 0 if insert successfully
+node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, object_t* object);
+void split_node(node_t* node, node_t* parent);
 
 #endif //INFECTIOUSDISEASEMODELING_R_TREE_H
