@@ -57,6 +57,59 @@ size_t search(node_t *node, rectangle_t area, object_t ***objects) {
   return size_sum;
 }
 
+void insert(node_t *root, object_t *object, rectangle_t o_area) {
+    choose_and_insert(root, NULL, o_area, object);
+}
+
+node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, object_t* object) {
+    if (node->node_type == LEAF) {
+        node_t* new_obj = (node_t*) malloc(sizeof(object_t));
+        new_obj->node_type = OBJECT;
+        new_obj->rectangle = o_area;
+        new_obj->object = object;
+        node->entries[node->node_size] = new_obj;
+        node->node_size++;
+
+    } else {
+        int min_area = 0;
+        int min_idx = -1;
+        int i;
+        for (i = 0; i < node->node_size; i++) {
+            int extra_area = area_diff(cover(node->entries[i]->rectangle, o_area), node->entries[i]->rectangle);
+            if(min_idx == -1 || min_area > extra_area) {
+                min_area = extra_area;
+                min_idx = i;
+            }
+        }
+
+        if (min_idx == -1) {
+            node_t* new_node = (node_t*) malloc(sizeof(node_t));
+            new_node->node_type = LEAF;
+            new_node->node_size = 0;
+            new_node->rectangle = o_area;
+            node->entries[0] = new_node;
+            node->node_size++;
+            min_idx = 0;
+        }
+
+        node_t* res = choose_and_insert(node->entries[min_idx], node, o_area);
+        o_area = res->rectangle;
+    }
+
+
+    node->rectangle = cover(node->rectangle, o_area);
+
+    if (node->node_size > MAX_ENTRY_SIZE) {
+        split_node(node, parent);
+    }
+
+    return node;
+}
+
+void split_node(node_t* node, node_t* parent) {
+
+}
+
 int main() {
   printf("test basic search\n");
 

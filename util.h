@@ -21,7 +21,9 @@ typedef struct {
 }object_t;
 
 int intersect(rectangle_t rec1, rectangle_t rec2);
+int if_cover(rectangle_t rec1, rectangle_t rec2);
 rectangle_t cover(rectangle_t rec1, rectangle_t rec2);
+int area_diff(rectangle_t rec1, rectangle_t rec2);
 size_t min(size_t a, size_t b);
 size_t max(size_t a, size_t b);
 rectangle_t init(size_t left, size_t bottom, size_t right, size_t top);

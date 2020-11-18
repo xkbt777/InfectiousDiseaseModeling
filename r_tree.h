@@ -18,7 +18,7 @@ typedef struct node {
   size_t node_size;
   rectangle_t rectangle;
   object_t *object;
-  struct node *entries[MAX_ENTRY_SIZE];
+  struct node *entries[MAX_ENTRY_SIZE + 1];
 }node_t;
 
 typedef struct {
@@ -26,5 +26,6 @@ typedef struct {
 }r_tree_t;
 
 size_t search(node_t *node, rectangle_t area, object_t ***objects);
+void insert(node_t *root, object_t *object, rectangle_t o_area); // return 0 if insert successfully
 
 #endif //INFECTIOUSDISEASEMODELING_R_TREE_H
