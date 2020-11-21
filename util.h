@@ -18,6 +18,7 @@ typedef struct {
 
 typedef struct {
   size_t id;
+  float rate;
 }object_t;
 
 int intersect(rectangle_t rec1, rectangle_t rec2);

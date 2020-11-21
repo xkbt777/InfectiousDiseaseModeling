@@ -3,7 +3,6 @@
 #include <stdio.h>
 
 #include "r_tree.h"
-#include "util.h"
 
 r_tree_t* init_rtree() {
     node_t* root = (node_t*) malloc(sizeof(node_t));
