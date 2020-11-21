@@ -3,7 +3,6 @@
 #include <stdio.h>
 
 #include "r_tree.h"
-#include "util.h"
 
 size_t search(node_t *node, rectangle_t area, object_t ***objects) {
   if (node == NULL) {
