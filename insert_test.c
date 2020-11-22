@@ -1,8 +1,3 @@
-//
-// Created by shawn lv on 2020-11-21.
-//
-
-
 #include "insert_test.h"
 #include <stdio.h>
 
@@ -10,7 +5,7 @@ int main() {
   object_t *object_pointer = NULL;
   rectangle_t *rectangle_pointer = NULL;
 
-  randomGenerate(TEST_SIZE, MATRIX_SIZE, time(NULL), &object_pointer, &rectangle_pointer, 0.1);
+  random_generate(TEST_SIZE, MATRIX_SIZE, time(NULL), &object_pointer, &rectangle_pointer);
 
   object_to_file(object_pointer, rectangle_pointer, TEST_SIZE, "objects", MATRIX_SIZE);
 
@@ -34,7 +29,7 @@ int main() {
 
   object_t **search_object = NULL;
 
-  size_t found = scanSearch(object_pointer, rectangle_pointer, 10, init(2, 2, 5, 5), &search_object);
+  size_t found = scan_search(object_pointer, rectangle_pointer, 10, init(2, 2, 5, 5), &search_object);
 
   for (int i = 0; i < found; i++) {
     printf("Object id: %ld\n", search_object[i]->id);

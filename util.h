@@ -19,6 +19,8 @@ typedef struct {
 typedef struct {
   size_t id;
   size_t status;
+  size_t next_status;
+  size_t infected_iteration;
 }object_t;
 
 int intersect(rectangle_t rec1, rectangle_t rec2);
