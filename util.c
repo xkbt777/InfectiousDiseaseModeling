@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "util.h"
 
 int intersect(rectangle_t rec1, rectangle_t rec2) {
@@ -49,12 +50,12 @@ rectangle_t cover(rectangle_t rec1, rectangle_t rec2) {
   return rectangle;
 }
 
-int area_diff(rectangle_t rec1, rectangle_t rec2) {
-    int area1 = (rec1.top_right.x - rec1.bottom_left.x) * (rec1.top_right.y - rec1.bottom_left.y);
-    int area2 = (rec2.top_right.x - rec2.bottom_left.x) * (rec2.top_right.y - rec2.bottom_left.y);
+float area_diff(rectangle_t rec1, rectangle_t rec2) {
+    float area1 = (rec1.top_right.x - rec1.bottom_left.x) * (rec1.top_right.y - rec1.bottom_left.y);
+    float area2 = (rec2.top_right.x - rec2.bottom_left.x) * (rec2.top_right.y - rec2.bottom_left.y);
 
     if (area1 < area2) {
-        int tmp = area1;
+        float tmp = area1;
         area1 = area2;
         area2 = tmp;
     }
@@ -62,7 +63,7 @@ int area_diff(rectangle_t rec1, rectangle_t rec2) {
     return area1 - area2;
 }
 
-size_t min(size_t a, size_t b) {
+float min(float a, float b) {
   if (a < b) {
     return a;
   }
@@ -70,14 +71,14 @@ size_t min(size_t a, size_t b) {
 }
 
 
-size_t max(size_t a, size_t b) {
+float max(float a, float b) {
   if (a > b) {
     return a;
   }
   return b;
 }
 
-rectangle_t init(size_t left, size_t bottom, size_t right, size_t top) {
+rectangle_t init(float left, float bottom, float right, float top) {
   rectangle_t rectangle;
 
   rectangle.top_right.y = top;
@@ -86,4 +87,16 @@ rectangle_t init(size_t left, size_t bottom, size_t right, size_t top) {
   rectangle.bottom_left.x = left;
 
   return rectangle;
+}
+
+void object_to_file(object_t *objects, rectangle_t *recs, size_t object_number, char *filename, size_t matrix_size) {
+  FILE *file = fopen(filename, "w");
+
+  fprintf(file, "%zu\n", matrix_size);
+
+  for (int i = 0; i < object_number; i++) {
+    fprintf(file, "%zu,%f,%f,%f,%f\n", objects[i].id, recs[i].bottom_left.x, recs[i].bottom_left.y,
+                                                      recs[i].top_right.x, recs[i].top_right.y);
+  }
+  fclose(file);
 }

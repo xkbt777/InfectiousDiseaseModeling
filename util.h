@@ -7,8 +7,8 @@
 
 
 typedef struct {
-  size_t x;
-  size_t y;
+  float x;
+  float y;
 }point_t;
 
 typedef struct {
@@ -18,15 +18,16 @@ typedef struct {
 
 typedef struct {
   size_t id;
-  float rate;
+  size_t status;
 }object_t;
 
 int intersect(rectangle_t rec1, rectangle_t rec2);
 int if_cover(rectangle_t rec1, rectangle_t rec2);
 rectangle_t cover(rectangle_t rec1, rectangle_t rec2);
-int area_diff(rectangle_t rec1, rectangle_t rec2);
-size_t min(size_t a, size_t b);
-size_t max(size_t a, size_t b);
-rectangle_t init(size_t left, size_t bottom, size_t right, size_t top);
+float area_diff(rectangle_t rec1, rectangle_t rec2);
+float min(float a, float b);
+float max(float a, float b);
+rectangle_t init(float left, float bottom, float right, float top);
+void object_to_file(object_t *objects, rectangle_t *recs, size_t object_number, char *filename, size_t matrix_size);
 
 #endif //INFECTIOUSDISEASEMODELING_UTIL_H

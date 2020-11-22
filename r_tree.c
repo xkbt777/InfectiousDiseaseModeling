@@ -55,8 +55,8 @@ size_t search(node_t *node, rectangle_t area, object_t ***objects) {
   size_t size_sum = 0;
 
   for (int i = 0; i < node->node_size; i++) {
-    printf("Object ID: %ld\n", node->entries[i]->object->id);
-    printf("outcome: %d\n", intersect(node->entries[i]->rectangle, area));
+    // printf("Object ID: %ld\n", node->entries[i]->object->id);
+    // printf("outcome: %d\n", intersect(node->entries[i]->rectangle, area));
     if (intersect(node->entries[i]->rectangle, area)) {
       objects_pointers[size_sum] = node->entries[i]->object;
       size_sum += 1;
@@ -70,8 +70,8 @@ size_t search(node_t *node, rectangle_t area, object_t ***objects) {
 
 void insert(node_t *root, object_t *object, rectangle_t o_area) {
     choose_and_insert(root, NULL, o_area, object);
-//    printf("\nRTREE\n");
-//    print_tree(root, 0);
+    printf("\nRTREE\n");
+    print_tree(root, 0);
 }
 
 node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, object_t* object) {
@@ -86,12 +86,12 @@ node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, obje
         }
 
     } else {
-        int min_area = 0;
+        float min_area = 0;
         int min_idx = -1;
         int i;
         for (i = 0; i < node->node_size; i++) {
-            int extra_area = area_diff(cover(node->entries[i]->rectangle, o_area), node->entries[i]->rectangle);
-            if(min_idx == -1 || min_area > extra_area) {
+            float extra_area = area_diff(cover(node->entries[i]->rectangle, o_area), node->entries[i]->rectangle);
+            if (min_idx == -1 || min_area > extra_area) {
                 min_area = extra_area;
                 min_idx = i;
             }
@@ -176,9 +176,9 @@ void split_node(node_t* node, node_t* parent) {
             continue;
         }
         if (i == group1) {
-//            printf("%zu %zu %zu %zu assigned to node\n",
-//                    node->entries[i]->rectangle.bottom_left.x, node->entries[i]->rectangle.bottom_left.y,
-//                   node->entries[i]->rectangle.top_right.x, node->entries[i]->rectangle.top_right.y);
+            printf("%f %f %f %f assigned to node\n",
+              node->entries[i]->rectangle.bottom_left.x, node->entries[i]->rectangle.bottom_left.y,
+              node->entries[i]->rectangle.top_right.x, node->entries[i]->rectangle.top_right.y);
             node->entries[node->node_size++] = node->entries[i];
             continue;
         }
@@ -192,9 +192,9 @@ void split_node(node_t* node, node_t* parent) {
         }
 
         rectangle_t r1 = cover(node->rectangle, node->entries[i]->rectangle);
-        int diff1 = area_diff(r1, node->rectangle);
+        float diff1 = area_diff(r1, node->rectangle);
         rectangle_t r2 = cover(node2->rectangle, node->entries[i]->rectangle);
-        int diff2 = area_diff(r2, node2->rectangle);
+        float diff2 = area_diff(r2, node2->rectangle);
 
         if (diff1 < diff2) {
             node->rectangle = r1;
@@ -236,7 +236,7 @@ void copy_node(node_t* src, node_t* dest) {
 
 void print_tree(node_t* node, int level) {
      if (node->node_type == OBJECT) {
-         printf("Level: %d Object: %zu %zu %zu %zu\n", level, node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
+         printf("Level: %d Object: %f %f %f %f\n", level, node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
                  node->rectangle.top_right.x, node->rectangle.top_right.y);
      } else {
          int i;
@@ -244,11 +244,11 @@ void print_tree(node_t* node, int level) {
              print_tree(node->entries[i], level + 1);
          }
          if (node->node_type == INTERNAL) {
-             printf("Level: %d Internal: ", level);
+             printf("Level: %d Size: %ld, Internal: ", level, node->node_size);
          } else {
-             printf("Level: %d Leaf: ", level);
+             printf("Level: %d Size: %ld, Leaf: ", level, node->node_size);
          }
-         printf("%zu %zu %zu %zu\n", node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
+         printf("%f %f %f %f\n", node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
                 node->rectangle.top_right.x, node->rectangle.top_right.y);
      }
 }
@@ -271,6 +271,21 @@ void free_node(node_t* node) {
     free(node);
 }
 
+void tree_to_file(node_t* node, FILE *file, int level) {
+  if (node->node_type == OBJECT) {
+    fprintf(file, "%d,%f,%f,%f,%f\n", level, node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
+           node->rectangle.top_right.x, node->rectangle.top_right.y);
+  } else {
+    int i;
+    for (i = 0; i < node->node_size; i++) {
+      tree_to_file(node->entries[i], file, level + 1);
+    }
+    fprintf(file, "%d,%f,%f,%f,%f\n", level, node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
+           node->rectangle.top_right.x, node->rectangle.top_right.y);
+  }
+}
+
+/*
 int main() {
   printf("test basic search&insert\n");
 
@@ -343,3 +358,4 @@ int main() {
   free(object_pointer);
   free_rtree(r_tree);
 }
+ */

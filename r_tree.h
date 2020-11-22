@@ -34,6 +34,7 @@ node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, obje
 void split_node(node_t* node, node_t* parent);
 void copy_node(node_t* src, node_t* dest);
 void print_tree(node_t* node, int level);
+void tree_to_file(node_t* node, FILE *file, int level);
 void free_rtree(r_tree_t* r_tree);
 void free_node(node_t* root);
 

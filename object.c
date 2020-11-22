@@ -8,13 +8,13 @@ void randomGenerate(size_t object_number, size_t matrix_size, unsigned int seed,
   for (int i = 0; i < object_number; i++) {
     (*out)[i].id = i;
     if (((float) rand() / (float) RAND_MAX) < init_rate) {
-      (*out)[i].rate = 1.0f;
+      (*out)[i].status = 1;
     } else {
-      (*out)[i].rate = 0.0f;
+      (*out)[i].status = 0;
     }
 
-    size_t x = rand() % matrix_size;
-    size_t y = rand() % matrix_size;
+    float x = 1.0 * rand() / RAND_MAX * (matrix_size - 1);
+    float y = 1.0 * rand() / RAND_MAX * (matrix_size - 1);
 
     (*rec)[i] = init(x, y, x + 1, y + 1);
   }
@@ -44,6 +44,7 @@ size_t scanSearch(object_t *objects, rectangle_t *recs, size_t object_number, re
   return size;
 }
 
+/*
 int main() {
   object_t *object_pointer = NULL;
   rectangle_t *rectangle_pointer = NULL;
@@ -51,7 +52,7 @@ int main() {
   randomGenerate(10, 10, time(NULL), &object_pointer, &rectangle_pointer, 0.1);
 
   for (int i = 0; i < 10; i++) {
-    printf("Object rate: %f, left: %ld, bottom: %ld\n", object_pointer[i].rate, rectangle_pointer[i].bottom_left.x, rectangle_pointer[i].bottom_left.y);
+    printf("Object status: %zu, left: %f, bottom: %f\n", object_pointer[i].status, rectangle_pointer[i].bottom_left.x, rectangle_pointer[i].bottom_left.y);
   }
 
   object_t **search_object = NULL;
@@ -62,4 +63,5 @@ int main() {
     printf("Object id: %ld\n", search_object[i]->id);
   }
 }
+ */
 
