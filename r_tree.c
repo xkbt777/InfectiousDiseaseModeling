@@ -121,6 +121,9 @@ node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, obje
 }
 
 void split_node(node_t* node, node_t* parent) {
+//    printf("%.2f %.2f %.2f %.2f SPLIT\n",
+//           node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
+//           node->rectangle.top_right.x, node->rectangle.top_right.y);
     int top = 0, top_idx = -1;
     int bottom = 0, bottom_idx = -1;
     int right = 0, right_idx = -1;
@@ -162,6 +165,12 @@ void split_node(node_t* node, node_t* parent) {
         group2 = right_idx;
     }
 
+//    printf("SPLIT start with %.2f %.2f %.2f %.2f and %.2f %.2f %.2f %.2f\n",
+//           node->entries[group1]->rectangle.bottom_left.x, node->entries[group1]->rectangle.bottom_left.y,
+//           node->entries[group1]->rectangle.top_right.x, node->entries[group1]->rectangle.top_right.y,
+//           node->entries[group2]->rectangle.bottom_left.x, node->entries[group2]->rectangle.bottom_left.y,
+//           node->entries[group2]->rectangle.top_right.x, node->entries[group2]->rectangle.top_right.y);
+
     node_t* node2 = (node_t*) malloc(sizeof(node_t));
     node2->node_type = node->node_type;
     node2->entries[0] = node->entries[group2];
@@ -176,9 +185,9 @@ void split_node(node_t* node, node_t* parent) {
             continue;
         }
         if (i == group1) {
-            printf("%f %f %f %f assigned to node\n",
-              node->entries[i]->rectangle.bottom_left.x, node->entries[i]->rectangle.bottom_left.y,
-              node->entries[i]->rectangle.top_right.x, node->entries[i]->rectangle.top_right.y);
+//            printf("%.2f %.2f %.2f %.2f assigned to node\n",
+//              node->entries[i]->rectangle.bottom_left.x, node->entries[i]->rectangle.bottom_left.y,
+//              node->entries[i]->rectangle.top_right.x, node->entries[i]->rectangle.top_right.y);
             node->entries[node->node_size++] = node->entries[i];
             continue;
         }
@@ -205,6 +214,13 @@ void split_node(node_t* node, node_t* parent) {
         }
     }
     for (; i < size; i++) {
+        if (i == group2) {
+            continue;
+        }
+        if (i == group1) {
+            node->entries[node->node_size++] = node->entries[i];
+            continue;
+        }
         remain->rectangle = cover(remain->rectangle, node->entries[i]->rectangle);
         remain->entries[remain->node_size++] = node->entries[i];
     }
@@ -236,7 +252,7 @@ void copy_node(node_t* src, node_t* dest) {
 
 void print_tree(node_t* node, int level) {
      if (node->node_type == OBJECT) {
-         printf("Level: %d Object: %f %f %f %f\n", level, node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
+         printf("Level: %d Object: %.2f %.2f %.2f %.2f\n", level, node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
                  node->rectangle.top_right.x, node->rectangle.top_right.y);
      } else {
          int i;
@@ -248,7 +264,7 @@ void print_tree(node_t* node, int level) {
          } else {
              printf("Level: %d Size: %ld, Leaf: ", level, node->node_size);
          }
-         printf("%f %f %f %f\n", node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
+         printf("%.2f %.2f %.2f %.2f\n", node->rectangle.bottom_left.x, node->rectangle.bottom_left.y,
                 node->rectangle.top_right.x, node->rectangle.top_right.y);
      }
 }
@@ -358,4 +374,4 @@ int main() {
   free(object_pointer);
   free_rtree(r_tree);
 }
- */
+*/
