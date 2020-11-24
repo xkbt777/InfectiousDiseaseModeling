@@ -5,7 +5,8 @@
 #ifndef INFECTIOUSDISEASEMODELING_R_TREE_H
 #define INFECTIOUSDISEASEMODELING_R_TREE_H
 
-#include "util.h"
+#include "rectangle.h"
+#include "object.h"
 
 #define MAX_ENTRY_SIZE 2
 #define MIN_ENTRY_SIZE 1

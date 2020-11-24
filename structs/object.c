@@ -113,6 +113,19 @@ void status_update(object_t *objects, size_t object_number, size_t cur_iter) {
   }
 }
 
+
+void object_to_file(object_t *objects, rectangle_t *recs, size_t object_number, char *filename, size_t matrix_size) {
+    FILE *file = fopen(filename, "w");
+
+    fprintf(file, "%zu\n", matrix_size);
+
+    for (int i = 0; i < object_number; i++) {
+        fprintf(file, "%zu,%f,%f,%f,%f,%zu\n", objects[i].id, recs[i].bottom_left.x, recs[i].bottom_left.y,
+                recs[i].top_right.x, recs[i].top_right.y, objects[i].status);
+    }
+    fclose(file);
+}
+
 /*
 int main() {
   object_t *object_pointer = NULL;

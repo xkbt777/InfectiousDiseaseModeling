@@ -3,7 +3,7 @@ import sys
 from matplotlib.patches import Rectangle
 
 levels = {}
-with open("./tree", "r") as file:
+with open("tree", "r") as file:
     matrix_size = int(file.readline())
     for line in file:
         words = line.rstrip().split(",")

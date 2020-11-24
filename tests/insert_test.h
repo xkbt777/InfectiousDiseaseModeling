@@ -5,9 +5,9 @@
 #ifndef INFECTIOUSDISEASEMODELING_INSERT_TEST_H
 #define INFECTIOUSDISEASEMODELING_INSERT_TEST_H
 
-#include "object.h"
-#include "util.h"
-#include "r_tree.h"
+#include "../structs/object.h"
+#include "../structs/rectangle.h"
+#include "../structs/r_tree.h"
 
 #define TEST_SIZE 10
 #define MATRIX_SIZE 10

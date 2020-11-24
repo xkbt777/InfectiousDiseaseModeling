@@ -10,7 +10,7 @@
 #include <time.h>
 #include <math.h>
 
-#include "util.h"
+#include "rectangle.h"
 
 #define SUSPICIOUS 0
 #define INFECTED 1
@@ -27,12 +27,20 @@
 #define PI 3.14159265358979323846
 #define to_deg(x) (x * PI / 180)
 
+typedef struct {
+    size_t id;
+    size_t status;
+    size_t next_status;
+    size_t infected_iteration;
+}object_t;
+
 void random_generate(size_t object_number, size_t matrix_size, unsigned int seed, object_t **out, rectangle_t **rec);
 size_t scan_search(object_t *objects, rectangle_t *recs, size_t object_number, rectangle_t target, object_t ***output);
 void random_object_move(object_t *object, rectangle_t *rec, float step_size, float matrix_size);
 float move(float origin, float offset, float matrix_size);
 void contact(object_t *object1, object_t *object2, size_t cur_iter);
 void status_update(object_t *objects, size_t object_number, size_t cur_iter);
+void object_to_file(object_t *objects, rectangle_t *recs, size_t object_number, char *filename, size_t matrix_size);
 
 
 #endif //INFECTIOUSDISEASEMODELING_OBJECT_H

@@ -1,7 +1,20 @@
 #include "linear_simulation.h"
 #include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
 
-int main() {
+int main(int argc, char* argv[]) {
+  int use_rtree = 0;
+  int opt;
+  while ((opt = getopt(argc, argv, "r")) != -1) {
+    switch (opt) {
+      case 'r':
+        use_rtree = 1;
+        break;
+      }
+  }
+
+
   object_t *object_pointer = NULL;
   rectangle_t *rectangle_pointer = NULL;
 
@@ -20,11 +33,25 @@ int main() {
       random_object_move(object_pointer + j, rectangle_pointer + j, STEP_SIZE, (float) MATRIX_SIZE);
     }
 
+    // structs construction
+    r_tree_t *r_tree = NULL;
+    if (use_rtree) {
+      r_tree = init_rtree();
+      for (int i = 0; i < TEST_SIZE; i++) {
+        insert(r_tree->root, object_pointer + i, rectangle_pointer[i]);
+      }
+    }
+
     // search and contact
     for (int j = 0; j < TEST_SIZE; j++) {
       object_t **search_object = NULL;
 
-      size_t found = scan_search(object_pointer, rectangle_pointer, TEST_SIZE, rectangle_pointer[j], &search_object);
+      size_t found;
+      if (use_rtree) {
+        found = search(r_tree->root, rectangle_pointer[j], &search_object);
+      } else {
+        found = scan_search(object_pointer, rectangle_pointer, TEST_SIZE, rectangle_pointer[j], &search_object);
+      }
 
       for (int k = 0; k < found; k++) {
         contact(object_pointer + j, search_object[k], i);
@@ -38,6 +65,10 @@ int main() {
 
     // to file
     object_to_file(object_pointer, rectangle_pointer, TEST_SIZE, buf, MATRIX_SIZE);
+
+    if (use_rtree) {
+      free_rtree(r_tree);
+    }
   }
 
   free(object_pointer);
