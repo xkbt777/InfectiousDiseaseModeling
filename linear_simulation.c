@@ -1,28 +1,33 @@
 #include "linear_simulation.h"
-#include <stdio.h>
-#include <unistd.h>
-#include <getopt.h>
 
 int main(int argc, char* argv[]) {
-  int use_rtree = 0;
+  int use_rtree = 0, print = 0;
   int opt;
+  struct timeval start, end;
   while ((opt = getopt(argc, argv, "r")) != -1) {
     switch (opt) {
       case 'r':
         use_rtree = 1;
+        printf("Use r_tree\n");
+        break;
+      case 'p':
+        print = 1;
         break;
       }
   }
-
 
   object_t *object_pointer = NULL;
   rectangle_t *rectangle_pointer = NULL;
 
   random_generate(TEST_SIZE, MATRIX_SIZE, time(NULL), &object_pointer, &rectangle_pointer);
 
-  object_to_file(object_pointer, rectangle_pointer, TEST_SIZE, "object_data", MATRIX_SIZE);
+  if (print) {
+    object_to_file(object_pointer, rectangle_pointer, TEST_SIZE, "object_data", MATRIX_SIZE);
+  }
 
   char buf[BUF_SIZE];
+
+  gettimeofday(&start, NULL);
 
   for (int i = 0; i < ITER_TIME; i++) {
     memset(buf, 0, BUF_SIZE * sizeof(char));
@@ -63,8 +68,10 @@ int main(int argc, char* argv[]) {
     // status update
     status_update(object_pointer, TEST_SIZE, i);
 
-    // to file
-    object_to_file(object_pointer, rectangle_pointer, TEST_SIZE, buf, MATRIX_SIZE);
+    // print to file
+    if (print) {
+      object_to_file(object_pointer, rectangle_pointer, TEST_SIZE, buf, MATRIX_SIZE);
+    }
 
     if (use_rtree) {
       free_rtree(r_tree);
@@ -74,4 +81,6 @@ int main(int argc, char* argv[]) {
   free(object_pointer);
   free(rectangle_pointer);
 
+  gettimeofday(&end, NULL);
+  printf("Total time: %.3lf s\n", time_interval(start, end));
 }

@@ -8,6 +8,11 @@
 #include "structs/object.h"
 #include "structs/rectangle.h"
 #include "structs/r_tree.h"
+#include "structs/util.h"
+
+#include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
 
 #define TEST_SIZE 10
 #define MATRIX_SIZE 10

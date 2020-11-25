@@ -70,8 +70,8 @@ size_t search(node_t *node, rectangle_t area, object_t ***objects) {
 
 void insert(node_t *root, object_t *object, rectangle_t o_area) {
     choose_and_insert(root, NULL, o_area, object);
-    printf("\nRTREE\n");
-    print_tree(root, 0);
+    // printf("\nRTREE\n");
+    // print_tree(root, 0);
 }
 
 node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, object_t* object) {
