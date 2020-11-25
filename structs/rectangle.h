@@ -22,6 +22,8 @@ rectangle_t cover(rectangle_t rec1, rectangle_t rec2);
 float area_diff(rectangle_t rec1, rectangle_t rec2);
 float min(float a, float b);
 float max(float a, float b);
+point_t mid_point(rectangle_t rectangle);
+int if_cover_point(rectangle_t rectangle, point_t point, int left_include, int bottom_include, int right_include, int top_include);
 rectangle_t init(float left, float bottom, float right, float top);
 
 #endif //INFECTIOUSDISEASEMODELING_RECTANGLE_H

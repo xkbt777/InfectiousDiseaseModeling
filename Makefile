@@ -1,5 +1,6 @@
-EXECS = insert_test linear_simulation
+EXECS = insert_test linear_simulation mpi_simulation
 GCC ?= gcc
+MPICC ?= mpicc
 CFLAG = -lm -g -Wall -std=c99 -O3
 
 all: rectangle.o r_tree.o object.o util.o ${EXECS}
@@ -21,6 +22,9 @@ insert_test: tests/insert_test.c tests/insert_test.h
 
 linear_simulation: linear_simulation.c linear_simulation.h
 	${GCC} -o linear_simulation linear_simulation.c r_tree.o object.o rectangle.o util.o ${CFLAG}
+
+mpi_simulation: mpi_simulation.c mpi_simulation.h
+	${MPICC} -o mpi_simulation mpi_simulation.c r_tree.o object.o rectangle.o util.o ${CFLAG}
 
 clean:
 	rm -f *.o ${EXECS} object_data* tree

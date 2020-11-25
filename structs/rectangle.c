@@ -78,6 +78,52 @@ float max(float a, float b) {
   return b;
 }
 
+point_t mid_point(rectangle_t rectangle) {
+  point_t point;
+
+  point.x = (rectangle.bottom_left.x + rectangle.top_right.x) / 2;
+  point.y = (rectangle.bottom_left.y + rectangle.top_right.y) / 2;
+
+  return point;
+}
+
+int if_cover_point(rectangle_t rectangle, point_t point, int left_include, int bottom_include, int right_include, int top_include) {
+
+  if (point.x < rectangle.bottom_left.x) {
+    return 0;
+  }
+
+  if (point.y < rectangle.bottom_left.y) {
+    return 0;
+  }
+
+  if (point.x > rectangle.top_right.x) {
+    return 0;
+  }
+
+  if (point.y > rectangle.top_right.y) {
+    return 0;
+  }
+
+  if (left_include == 0 && point.x == rectangle.bottom_left.x) {
+    return 0;
+  }
+
+  if (bottom_include == 0 && point.y == rectangle.bottom_left.y) {
+    return 0;
+  }
+
+  if (right_include == 0 && point.x == rectangle.top_right.x) {
+    return 0;
+  }
+
+  if (top_include == 0 && point.y == rectangle.top_right.y) {
+    return 0;
+  }
+  return 1;
+}
+
+
 rectangle_t init(float left, float bottom, float right, float top) {
   rectangle_t rectangle;
 
@@ -88,3 +134,5 @@ rectangle_t init(float left, float bottom, float right, float top) {
 
   return rectangle;
 }
+
+
