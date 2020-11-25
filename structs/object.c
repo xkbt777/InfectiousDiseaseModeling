@@ -126,6 +126,25 @@ void object_to_file(object_t *objects, rectangle_t *recs, size_t object_number, 
     fclose(file);
 }
 
+void object_statistic(object_t *objects, size_t object_number) {
+  int suspicious = 0, infected = 0, recovered = 0;
+  for (int i = 0; i < object_number; i++) {
+    if (objects[i].status == SUSPICIOUS) {
+      suspicious += 1;
+      continue;
+    }
+
+    if (objects[i].status == INFECTED) {
+      infected += 1;
+      continue;
+    }
+
+    recovered += 1;
+  }
+
+  printf("Sus: %d, Inf: %d, Rec: %d\n", suspicious, infected, recovered);
+}
+
 /*
 int main() {
   object_t *object_pointer = NULL;

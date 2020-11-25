@@ -41,6 +41,7 @@ float move(float origin, float offset, float matrix_size);
 void contact(object_t *object1, object_t *object2, size_t cur_iter);
 void status_update(object_t *objects, size_t object_number, size_t cur_iter);
 void object_to_file(object_t *objects, rectangle_t *recs, size_t object_number, char *filename, size_t matrix_size);
+void object_statistic(object_t *objects, size_t object_number);
 
 
 #endif //INFECTIOUSDISEASEMODELING_OBJECT_H

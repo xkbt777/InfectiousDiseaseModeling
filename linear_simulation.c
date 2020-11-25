@@ -2,9 +2,10 @@
 
 int main(int argc, char* argv[]) {
   int use_rtree = 0, print = 0;
+  unsigned int seed = time(NULL);
   int opt;
   struct timeval start, end;
-  while ((opt = getopt(argc, argv, "r")) != -1) {
+  while ((opt = getopt(argc, argv, "rps:")) != -1) {
     switch (opt) {
       case 'r':
         use_rtree = 1;
@@ -13,13 +14,17 @@ int main(int argc, char* argv[]) {
       case 'p':
         print = 1;
         break;
+      case 's':
+        seed = atoi(optarg);
+        break;
       }
   }
 
   object_t *object_pointer = NULL;
   rectangle_t *rectangle_pointer = NULL;
 
-  random_generate(TEST_SIZE, MATRIX_SIZE, time(NULL), &object_pointer, &rectangle_pointer);
+  random_generate(TEST_SIZE, MATRIX_SIZE, seed, &object_pointer, &rectangle_pointer);
+  object_statistic(object_pointer, TEST_SIZE);
 
   if (print) {
     object_to_file(object_pointer, rectangle_pointer, TEST_SIZE, "object_data", MATRIX_SIZE);
@@ -78,9 +83,10 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  free(object_pointer);
-  free(rectangle_pointer);
-
   gettimeofday(&end, NULL);
   printf("Total time: %.3lf s\n", time_interval(start, end));
+  object_statistic(object_pointer, TEST_SIZE);
+
+  free(object_pointer);
+  free(rectangle_pointer);
 }

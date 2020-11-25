@@ -2,8 +2,8 @@
 // Created by shawn lv on 2020-11-17.
 //
 
-#ifndef INFECTIOUSDISEASEMODELING_UTIL_H
-#define INFECTIOUSDISEASEMODELING_UTIL_H
+#ifndef INFECTIOUSDISEASEMODELING_RECTANGLE_H
+#define INFECTIOUSDISEASEMODELING_RECTANGLE_H
 
 
 typedef struct {
@@ -24,4 +24,4 @@ float min(float a, float b);
 float max(float a, float b);
 rectangle_t init(float left, float bottom, float right, float top);
 
-#endif //INFECTIOUSDISEASEMODELING_UTIL_H
+#endif //INFECTIOUSDISEASEMODELING_RECTANGLE_H

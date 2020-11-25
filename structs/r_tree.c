@@ -128,8 +128,8 @@ void split_node(node_t* node, node_t* parent) {
     int bottom = 0, bottom_idx = -1;
     int right = 0, right_idx = -1;
     int left = 0, left_idx = -1;
-    long total_height = 0;
-    long total_width = 0;
+    float total_height = 0;
+    float total_width = 0;
 
     size_t size = node->node_size;
     int i;
