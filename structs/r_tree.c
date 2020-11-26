@@ -68,6 +68,58 @@ size_t search(node_t *node, rectangle_t area, object_t ***objects) {
   return size_sum;
 }
 
+size_t search_infect_rec(node_t *node, rectangle_t area, rectangle_t **recs) {
+  if (node == NULL) {
+    *recs = NULL;
+    return 0;
+  }
+
+  if (node->node_type == INTERNAL) {
+    size_t *sizes = (size_t *) calloc(node->node_size, sizeof(size_t));
+    rectangle_t **rec_pointers = (rectangle_t **) calloc(node->node_size, sizeof(rectangle_t *));
+
+    size_t size_sum = 0;
+
+    for (int i = 0; i < node->node_size; i++) {
+      if (intersect(node->rectangle, area)) {
+        sizes[i] = search_infect_rec(node->entries[i], area, &(rec_pointers[i]));
+        size_sum += sizes[i];
+      }
+    }
+
+    *recs = (rectangle_t *) calloc(size_sum, sizeof(rectangle_t));
+    size_sum = 0;
+
+    for (int i = 0; i < node->node_size; i++) {
+      if (sizes[i] > 0) {
+        memcpy((*recs) + size_sum, rec_pointers[i], sizes[i] * sizeof(rectangle_t));
+        size_sum += sizes[i];
+      }
+      free(rec_pointers[i]);
+    }
+
+    free(sizes);
+    free(rec_pointers);
+    return size_sum;
+  }
+
+  rectangle_t rec_pointers[MAX_ENTRY_SIZE];
+  size_t size_sum = 0;
+
+  for (int i = 0; i < node->node_size; i++) {
+    // printf("Object ID: %ld\n", node->entries[i]->object->id);
+    // printf("outcome: %d\n", intersect(node->entries[i]->rectangle, area));
+    if (node->entries[i]->object->status == INFECTED && intersect(node->entries[i]->rectangle, area)) {
+      rec_pointers[size_sum] = node->entries[i]->rectangle;
+      size_sum += 1;
+    }
+  }
+  *recs = (rectangle_t *) calloc(size_sum, sizeof(rectangle_t));
+
+  memcpy(*recs, rec_pointers, size_sum * sizeof(rectangle_t));
+  return size_sum;
+}
+
 void insert(node_t *root, object_t *object, rectangle_t o_area) {
     choose_and_insert(root, NULL, o_area, object);
     // printf("\nRTREE\n");

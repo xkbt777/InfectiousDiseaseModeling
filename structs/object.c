@@ -16,10 +16,11 @@ void random_generate(size_t object_number, size_t matrix_size, unsigned int seed
       (*out)[i].next_status = SUSPICIOUS;
     }
 
-    float x = 1.0 * rand() / RAND_MAX * (matrix_size - 1);
-    float y = 1.0 * rand() / RAND_MAX * (matrix_size - 1);
+    float x = 1.0 * rand() / RAND_MAX * matrix_size;
+    float y = 1.0 * rand() / RAND_MAX * matrix_size;
 
-    (*rec)[i] = init(x, y, x + 1, y + 1);
+    (*rec)[i] = init(x - HALF_INFECT_ZONE_LENGTH, y - HALF_INFECT_ZONE_LENGTH,
+      x + HALF_INFECT_ZONE_LENGTH, y + HALF_INFECT_ZONE_LENGTH);
   }
 }
 
@@ -47,24 +48,48 @@ size_t scan_search(object_t *objects, rectangle_t *recs, size_t object_number, r
   return size;
 }
 
+size_t scan_search_infect_rec(object_t *objects, rectangle_t *recs, size_t object_number, rectangle_t target, rectangle_t **output) {
+  *output = (rectangle_t *) calloc(BUF_SIZE, sizeof(rectangle_t));
+  size_t size = 0;
+  size_t buf_size = BUF_SIZE;
+
+  for (int i = 0; i < object_number; i++) {
+    if (objects[i].status == INFECTED && intersect(target, recs[i])) {
+
+      // buffer write
+      if (size == buf_size) {
+        buf_size += BUF_SIZE;
+        rectangle_t *tmp = *output;
+        *output = (rectangle_t *) calloc(buf_size, sizeof(rectangle_t));
+        memcpy(*output, tmp, size * sizeof(rectangle_t));
+        free(tmp);
+      }
+
+      (*output)[size] = recs[i];
+      size += 1;
+    }
+  }
+  return size;
+}
+
+
 void random_object_move(object_t *object, rectangle_t *rec, float step_size, float matrix_size) {
   float direction = to_deg(rand() % 360);
   float x_offset = cos(direction) * step_size;
   float y_offset = sin(direction) * step_size;
 
-  float mid_x = (rec->bottom_left.x + rec->top_right.x) / 2;
-  float length_x = mid_x - rec->bottom_left.x;
-  float mid_y = (rec->bottom_left.y + rec->top_right.y) / 2;
-  float length_y = mid_y - rec->bottom_left.y;
+  point_t mid_p = mid_point(*rec);
 
+  float length_x = (rec->top_right.x - rec->bottom_left.x) / 2;
+  float length_y = (rec->top_right.y - rec->bottom_left.y) / 2;
 
-  mid_x = move(mid_x, x_offset, matrix_size);
-  mid_y = move(mid_y, y_offset, matrix_size);
+  mid_p.x = move(mid_p.x, x_offset, matrix_size);
+  mid_p.y = move(mid_p.y, y_offset, matrix_size);
 
-  rec->bottom_left.x = mid_x - length_x;
-  rec->bottom_left.y = mid_y - length_y;
-  rec->top_right.x = mid_x + length_x;
-  rec->top_right.y = mid_y + length_y;
+  rec->bottom_left.x = mid_p.x - length_x;
+  rec->bottom_left.y = mid_p.y - length_y;
+  rec->top_right.x = mid_p.x + length_x;
+  rec->top_right.y = mid_p.y + length_y;
 }
 
 float move(float origin, float offset, float matrix_size) {
@@ -86,14 +111,6 @@ void contact(object_t *object1, object_t *object2, size_t cur_iter) {
     if (((float) rand() / (float) RAND_MAX) < INFECTED_RATE) {
       object1->next_status = INFECTED;
       object1->infected_iteration = cur_iter;
-    }
-    return;
-  }
-
-  if (object1->status == INFECTED && object2->status == SUSPICIOUS) {
-    if (((float) rand() / (float) RAND_MAX) < INFECTED_RATE) {
-      object2->next_status = INFECTED;
-      object2->infected_iteration = cur_iter;
     }
   }
 }

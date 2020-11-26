@@ -37,6 +37,7 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < ITER_TIME; i++) {
     memset(buf, 0, BUF_SIZE * sizeof(char));
     sprintf(buf, "object_data%d", i);
+    printf("%s\n", buf);
 
     // movement
     for (int j = 0; j < TEST_SIZE; j++) {
@@ -54,20 +55,22 @@ int main(int argc, char* argv[]) {
 
     // search and contact
     for (int j = 0; j < TEST_SIZE; j++) {
-      object_t **search_object = NULL;
+      if (object_pointer[j].status == INFECTED) {
+        object_t **search_object = NULL;
 
-      size_t found;
-      if (use_rtree) {
-        found = search(r_tree->root, rectangle_pointer[j], &search_object);
-      } else {
-        found = scan_search(object_pointer, rectangle_pointer, TEST_SIZE, rectangle_pointer[j], &search_object);
+        size_t found;
+        if (use_rtree) {
+          found = search(r_tree->root, rectangle_pointer[j], &search_object);
+        } else {
+          found = scan_search(object_pointer, rectangle_pointer, TEST_SIZE, rectangle_pointer[j], &search_object);
+        }
+
+        for (int k = 0; k < found; k++) {
+          contact(search_object[k], object_pointer + j, i);
+        }
+
+        free(search_object);
       }
-
-      for (int k = 0; k < found; k++) {
-        contact(object_pointer + j, search_object[k], i);
-      }
-
-      free(search_object);
     }
 
     // status update
@@ -81,6 +84,7 @@ int main(int argc, char* argv[]) {
     if (use_rtree) {
       free_rtree(r_tree);
     }
+    object_statistic(object_pointer, TEST_SIZE);
   }
 
   gettimeofday(&end, NULL);

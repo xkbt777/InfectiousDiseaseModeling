@@ -14,11 +14,11 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#define TEST_SIZE 10000
-#define MATRIX_SIZE 256
+#define TEST_SIZE 1000
+#define MATRIX_SIZE 64
 #define ITER_TIME 10
 #define STEP_SIZE 1.0f
 
-int static_gather(int *indexes, rectangle_t *rectangles, rectangle_t target, int rank_id);
+int static_gather(object_t *dst, object_t *src, rectangle_t *rectangle_dst, rectangle_t *rectangle_src, rectangle_t target, int rank_id);
 
 #endif //INFECTIOUSDISEASEMODELING_MPI_SIMULATION_H

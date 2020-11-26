@@ -29,6 +29,7 @@ typedef struct {
 
 r_tree_t* init_rtree();
 size_t search(node_t *node, rectangle_t area, object_t ***objects);
+size_t search_infect_rec(node_t *node, rectangle_t area, rectangle_t **recs);
 void insert(node_t *root, object_t *object, rectangle_t o_area);
 
 node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, object_t* object);
