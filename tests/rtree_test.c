@@ -1,4 +1,4 @@
-#include "insert_test.h"
+#include "rtree_test.h"
 #include <stdio.h>
 
 int main() {
@@ -18,6 +18,12 @@ int main() {
   for (int i = 0; i < TEST_SIZE; i++) {
     insert(r_tree->root, object_pointer + i, rectangle_pointer[i]);
   }
+
+  delete(r_tree->root, object_pointer, rectangle_pointer[0]);
+  delete(r_tree->root, object_pointer + 3, rectangle_pointer[3]);
+  delete(r_tree->root, object_pointer + 5, rectangle_pointer[5]);
+  delete(r_tree->root, object_pointer + 7, rectangle_pointer[7]);
+  delete(r_tree->root, object_pointer + 9, rectangle_pointer[9]);
 
   FILE *file = fopen("tree", "w");
 
@@ -43,7 +49,7 @@ int main() {
     printf("Object id: %ld\n", search_object[i]->id);
   }
   free(search_object);
-  // free_rtree(r_tree);
+  free_rtree(r_tree);
 
   free(object_pointer);
   free(rectangle_pointer);

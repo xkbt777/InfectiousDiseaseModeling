@@ -1,4 +1,4 @@
-EXECS = insert_test linear_simulation mpi_simulation
+EXECS = rtree_test linear_simulation mpi_simulation
 GCC ?= gcc
 MPICC ?= mpicc
 CFLAG = -lm -g -Wall -std=c99 -O3
@@ -17,8 +17,8 @@ object.o: structs/object.c structs/object.h structs/rectangle.c
 util.o: structs/util.c structs/util.h
 	${GCC} -c structs/util.c ${CFLAG}
 
-insert_test: tests/insert_test.c tests/insert_test.h
-	${GCC} -o insert_test tests/insert_test.c r_tree.o object.o rectangle.o ${CFLAG}
+rtree_test: tests/rtree_test.c tests/rtree_test.h
+	${GCC} -o rtree_test tests/rtree_test.c r_tree.o object.o rectangle.o ${CFLAG}
 
 linear_simulation: linear_simulation.c linear_simulation.h
 	${GCC} -o linear_simulation linear_simulation.c r_tree.o object.o rectangle.o util.o ${CFLAG}
