@@ -33,6 +33,19 @@ To parallel our calculation, we come up with a data-partition approach based on 
 * Provide vistualization tools for simulation outcome.
 * Validate the simulation outcome of MPI version.
 
+## Goals and Deliverables
+### Plan to Achieve
+* Implement r-tree from scratch, which should surpass linear scan searching performance.
+* Implement a serial program simulating the infectious disease spreading as the baseline.
+* Combine R-tree with our baseline to provide reasonable serial simulation.
+* Design and implement a simple static assignment MPI version of our infectious disease spreading simulation.
+* Improve performance on imbalanced initial distribution by converting static assignment to dynamic assignment.
+* Analyze the performance, weak scalability and strong scalability of our implementation based on different sizes of cluster.
+
+### Nice to Have
+* Move from the random wandering movement model to the Social Force movement model without degrading the previous speedup.
+* Add danger area concept into the calculation of infectious rate without degrading previous speedup.
+
 
 
 ## Reference
