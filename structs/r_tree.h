@@ -30,6 +30,7 @@ typedef struct {
 r_tree_t* init_rtree();
 size_t search(node_t *node, rectangle_t area, object_t ***objects);
 size_t search_infect_rec(node_t *node, rectangle_t area, rectangle_t **recs);
+size_t search_with_rect(node_t *node, rectangle_t area, object_t **objects, rectangle_t **rectangles);
 void insert(node_t *root, object_t *object, rectangle_t o_area);
 int delete(node_t* root, object_t *target, rectangle_t o_area);
 void free_rtree(r_tree_t* r_tree);

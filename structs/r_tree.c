@@ -25,7 +25,6 @@ size_t search(node_t *node, rectangle_t area, object_t ***objects) {
   if (node->node_type == INTERNAL) {
     size_t *sizes = (size_t *) calloc(node->node_size, sizeof(size_t));
     object_t ***object_pointers = (object_t ***) calloc(node->node_size, sizeof(object_t **));
-
     size_t size_sum = 0;
 
     for (int i = 0; i < node->node_size; i++) {
@@ -62,9 +61,10 @@ size_t search(node_t *node, rectangle_t area, object_t ***objects) {
       size_sum += 1;
     }
   }
-  *objects = (object_t **) calloc(size_sum, sizeof(object_t *));
 
+  *objects = (object_t **) calloc(size_sum, sizeof(object_t *));
   memcpy(*objects, objects_pointers, size_sum * sizeof(object_t *));
+
   return size_sum;
 }
 
@@ -118,6 +118,68 @@ size_t search_infect_rec(node_t *node, rectangle_t area, rectangle_t **recs) {
 
   memcpy(*recs, rec_pointers, size_sum * sizeof(rectangle_t));
   return size_sum;
+}
+
+size_t search_with_rect(node_t *node, rectangle_t area, object_t **objects, rectangle_t **rectangles) {
+    if (node == NULL) {
+        *objects = NULL;
+        return 0;
+    }
+
+    if (node->node_type == INTERNAL) {
+        size_t *sizes = (size_t *) calloc(node->node_size, sizeof(size_t));
+        object_t **object_pointers = (object_t **) calloc(node->node_size, sizeof(object_t *));
+        rectangle_t **rectangle_pointers = (rectangle_t**) calloc(node->node_size, sizeof(rectangle_t*));
+
+        size_t size_sum = 0;
+
+        for (int i = 0; i < node->node_size; i++) {
+            if (intersect(node->rectangle, area)) {
+                sizes[i] = search_with_rect(node->entries[i], area, &(object_pointers[i]), &(rectangle_pointers[i]));
+                size_sum += sizes[i];
+            }
+        }
+
+        *rectangles = (rectangle_t*) calloc(size_sum, sizeof(rectangle_t));
+        *objects = (object_t *) calloc(size_sum, sizeof(object_t));
+        size_sum = 0;
+
+        for (int i = 0; i < node->node_size; i++) {
+            if (sizes[i] > 0) {
+                memcpy((*rectangles) + size_sum, rectangle_pointers[i], sizes[i] * sizeof(rectangle_t));
+                memcpy((*objects) + size_sum, object_pointers[i], sizes[i] * sizeof(object_t));
+                size_sum += sizes[i];
+            }
+            free(object_pointers[i]);
+            free(rectangle_pointers[i]);
+        }
+
+        free(sizes);
+        free(object_pointers);
+        free(rectangle_pointers);
+        return size_sum;
+    }
+
+    object_t objects_pointers[MAX_ENTRY_SIZE];
+    size_t size_sum = 0;
+    rectangle_t rectangle_pointers[MAX_ENTRY_SIZE];
+
+    for (int i = 0; i < node->node_size; i++) {
+        // printf("Object ID: %ld\n", node->entries[i]->object->id);
+        // printf("outcome: %d\n", intersect(node->entries[i]->rectangle, area));
+        if (intersect(node->entries[i]->rectangle, area)) {
+            objects_pointers[size_sum] = *(node->entries[i]->object);
+            rectangle_pointers[size_sum] = node->entries[i]->rectangle;
+            size_sum += 1;
+        }
+    }
+
+    *objects = (object_t *) calloc(size_sum, sizeof(object_t));
+    memcpy(*objects, objects_pointers, size_sum * sizeof(object_t));
+    *rectangles = (rectangle_t*) calloc(size_sum, sizeof(rectangle_t));
+    memcpy(*rectangles, rectangle_pointers, size_sum * sizeof(rectangle_t));
+
+    return size_sum;
 }
 
 void insert(node_t *root, object_t *object, rectangle_t o_area) {

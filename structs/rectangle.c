@@ -123,6 +123,13 @@ int if_cover_point(rectangle_t rectangle, point_t point, int left_include, int b
   return 1;
 }
 
+int if_above_point(rectangle_t rectangle, point_t point) {
+    if (point.y > rectangle.top_right.y) {
+        return 1;
+    }
+
+    return 0;
+}
 
 rectangle_t init(float left, float bottom, float right, float top) {
   rectangle_t rectangle;
