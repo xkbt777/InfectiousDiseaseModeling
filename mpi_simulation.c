@@ -81,9 +81,9 @@ int main(int argc, char* argv[]) {
   // found local area
   rectangle_t self_area;
   self_area.bottom_left.x = 0.0f;
-  self_area.bottom_left.y = MATRIX_SIZE / world_size * rank_id;
+  self_area.bottom_left.y = MATRIX_SIZE / (float)world_size * rank_id;
   self_area.top_right.x = (float) MATRIX_SIZE;
-  self_area.top_right.y = MATRIX_SIZE / world_size * (rank_id + 1);
+  self_area.top_right.y = MATRIX_SIZE / (float)world_size * (rank_id + 1);
 
   // gather object and rectangle into buffer
   object_t object_buffer[TEST_SIZE];
