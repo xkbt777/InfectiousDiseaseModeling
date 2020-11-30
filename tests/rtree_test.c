@@ -19,12 +19,6 @@ int main() {
     insert(r_tree->root, object_pointer + i, rectangle_pointer[i]);
   }
 
-  delete(r_tree->root, object_pointer, rectangle_pointer[0]);
-  delete(r_tree->root, object_pointer + 3, rectangle_pointer[3]);
-  delete(r_tree->root, object_pointer + 5, rectangle_pointer[5]);
-  delete(r_tree->root, object_pointer + 7, rectangle_pointer[7]);
-  delete(r_tree->root, object_pointer + 9, rectangle_pointer[9]);
-
   FILE *file = fopen("tree", "w");
 
   fprintf(file, "%d\n", MATRIX_SIZE);
@@ -32,6 +26,12 @@ int main() {
   tree_to_file(r_tree->root, file, 0);
 
   fclose(file);
+
+  delete(r_tree->root, object_pointer, rectangle_pointer[0]);
+  delete(r_tree->root, object_pointer + 3, rectangle_pointer[3]);
+  delete(r_tree->root, object_pointer + 5, rectangle_pointer[5]);
+  delete(r_tree->root, object_pointer + 7, rectangle_pointer[7]);
+  delete(r_tree->root, object_pointer + 9, rectangle_pointer[9]);
 
   object_t **search_object = NULL;
 
