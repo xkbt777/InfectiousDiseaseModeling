@@ -131,6 +131,26 @@ int if_above_point(rectangle_t rectangle, point_t point) {
     return 0;
 }
 
+int if_same_rectangle(rectangle_t rec1, rectangle_t rec2) {
+    if (rec1.bottom_left.x != rec2.bottom_left.x) {
+        return 0;
+    }
+
+    if (rec1.bottom_left.y != rec2.bottom_left.y) {
+        return 0;
+    }
+
+    if (rec1.top_right.x != rec2.top_right.x) {
+        return 0;
+    }
+
+    if (rec1.top_right.y != rec2.top_right.y) {
+        return 0;
+    }
+
+    return 1;
+}
+
 rectangle_t init(float left, float bottom, float right, float top) {
   rectangle_t rectangle;
 
