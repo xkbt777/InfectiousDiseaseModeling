@@ -20,18 +20,48 @@ To parallel our calculation, we come up with a data-partition approach based on 
 ### Schedule
 
 #### Nov.5 - Nov.11
-* Do some research on R-tree implementation.
-* Design our simplified infectious disease simulation based on infectious research.
+* Read papers to learn the details of R-tree implementation.
+* Design linear infectious disease model based on infectious research.
 
-#### Nov.12 - Nov.19
-* Finish basic R-tree implementation using C.
-* Finish linear-scan search infectious disease simulation.
-* Combine R-tree with infectious disease simulation to provide linear R-tree baseline.
+#### Nov.12 - Nov.15
+* Implement linear R-tree searching.
+* Implement linear R-tree inserting.
+* Implement linear R-tree deleting.
 
-#### Nov.20 - Nov.30 (Mid checkpoint)
-* Design and implement MPI data partition version of baseline.
-* Provide vistualization tools for simulation outcome.
-* Validate the simulation outcome of MPI version.
+#### Nov.16 - Nov.18
+* Test R-tree implementation using randomly generated test cases.
+* Implement the linear model using a linear scan searching.
+
+#### Nov.19 - Nov.21
+* Implement the linear model using R-tree.
+* Implement visualization tools for R-tree and model outcome.
+
+#### Nov.22 - Nov.25
+* Design MPI data partition version as a parallel baseline for infectious modeling.
+* Implement MPI baseline infectious model (static task assignment and contact calculation).
+* Implement MPI baseline infectious model (data partition check and task reallocate).
+* Validate the outcome of the MPI version infectious model.
+
+#### Nov.26 - Nov.28
+* Thanksgiving break (thank all 15-618 course-staff).
+
+#### Nov.29 - Dec.1
+* Finish mid-checkpoint report.
+* Design a dynamic task assignment for the MPI infectious model.
+
+#### Dec.2 - Dec.5
+* Implement dynamic task assignment (will be split into several more specific tasks and assigned after the design is settled).
+* Analyze the performance and scalability of MPI version infectious model.
+
+#### Dec.6 - Dec.7
+* Refine the MPI version infectious model if find some severe bottlenecks.
+
+#### Dec.7 - Dec.12
+* Apply social force model for people’s movement.
+* Add danger area concept into the calculation of the infectious rate.
+
+#### Dec.13 - Dec.14
+* Prepare for the poster session.
 
 ## Goals and Deliverables
 ### Plan to Achieve
