@@ -227,6 +227,28 @@ void free_rtree(r_tree_t* r_tree) {
     free(r_tree);
 }
 
+void random_move_rtree_objects(node_t* node, float step, int matrix_size) {
+  if (node->node_type == LEAF) {
+    for (size_t i = 0; i < node->node_size; i++) {
+      random_object_move(node->entries[i]->object, &node->entries[i]->rectangle, step, matrix_size);
+      if (i == 0) {
+        node->rectangle = node->entries[i]->rectangle;
+      } else {
+        node->rectangle = cover(node->rectangle, node->entries[i]->rectangle);
+      }
+    }
+  } else {
+    for (size_t i = 0; i < node->node_size; i++) {
+      random_move_rtree_objects(node->entries[i], step, matrix_size);
+      if (i == 0) {
+        node->rectangle = node->entries[i]->rectangle;
+      } else {
+        node->rectangle = cover(node->rectangle, node->entries[i]->rectangle);
+      }
+    }
+  }
+}
+
 node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, object_t* object) {
     if (node->node_type == LEAF) {
         node_t* new_obj = (node_t*) malloc(sizeof(node_t));

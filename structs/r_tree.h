@@ -8,8 +8,8 @@
 #include "rectangle.h"
 #include "object.h"
 
-#define MAX_ENTRY_SIZE 4
-#define MIN_ENTRY_SIZE 2
+#define MAX_ENTRY_SIZE 8
+#define MIN_ENTRY_SIZE 4
 
 #define INTERNAL 0
 #define LEAF 1
@@ -34,6 +34,7 @@ size_t search_with_rect(node_t *node, rectangle_t area, object_t **objects, rect
 void insert(node_t *root, object_t *object, rectangle_t o_area);
 int delete(node_t* root, object_t *target, rectangle_t o_area);
 void free_rtree(r_tree_t* r_tree);
+void random_move_rtree_objects(node_t* node, float step, int matrix_size);
 
 node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, object_t* object);
 void split_node(node_t* node, node_t* parent);
