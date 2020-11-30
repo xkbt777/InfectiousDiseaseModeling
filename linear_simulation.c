@@ -48,8 +48,14 @@ int main(int argc, char* argv[]) {
     r_tree_t *r_tree = NULL;
     if (use_rtree) {
       r_tree = init_rtree();
-      for (int i = 0; i < TEST_SIZE; i++) {
-        insert(r_tree->root, object_pointer + i, rectangle_pointer[i]);
+      for (int j = 0; j < TEST_SIZE; j++) {
+        insert(r_tree->root, object_pointer + j, rectangle_pointer[j]);
+      }
+
+      if (print) {
+        FILE *file = fopen("tree", "w");
+        tree_to_file(r_tree->root, file, 0);
+        fclose(file);
       }
     }
 
