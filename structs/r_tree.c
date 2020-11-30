@@ -390,7 +390,7 @@ node_t* find_and_delete(node_t* node, node_t* parent, rectangle_t o_area, object
     if (node->node_type == LEAF) {
         size_t i;
         for (i = 0; i < node->node_size; i++) {
-            if (node->entries[i]->object == target) {
+            if (node->entries[i]->object == target || if_same_rectangle(node->entries[i]->rectangle, o_area)) {
 //                printf("Delete object %.2f %.2f %.2f %.2f\n",
 //                        node->entries[i]->rectangle.bottom_left.x, node->entries[i]->rectangle.bottom_left.y,
 //                       node->entries[i]->rectangle.top_right.x, node->entries[i]->rectangle.top_right.y);
