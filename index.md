@@ -3,9 +3,14 @@
 We are going to implement an MPI parallel program that models infectious disease spreading in a big crowd. The basic version would apply a random wandering individual movement model and Gaussian Distribution on the distance between individuals to calculate the infectious rate, combined with a concurrent R-tree to optimize searching individuals within a specific area. A Social Force based movement model and danger area assumption are two feasible extensions on this topic.
 
 
-## Proposal
+## Documents
+### Proposal
 
 You could find our project proposal use the link [here](https://docs.google.com/document/d/1tsleYAoje3bNcmz6uF-RaMOxEU0FN9mPoS9msJkUcrA/edit?usp=sharing).
+
+### Checkpoint Report
+
+You could find checkpoint report for this porject [here](https://docs.google.com/document/d/1BM-jaM9GXgmGWbn2sI7aPPbhSdBLyLSXRcmYJ2oPEDE/edit?usp=sharing).
 
 ## Work Completed
 After exploring the researches in infectious disease field, we dicided to provide a paralleled version of SIR model simulation based on distance between individuals in a specific area. Individuals are divided into suspicious, infected and recovered group and their contact are described by contact between individuals whose distance inbetween is less than a specific threshold. At each iteration, the individuals are moving based on random incentive or affected by individuals nearby and contact happened after each movement. The simulation could indicate the SIR number in a specific area after a number of iteration based on parameters, such as infectious rate or infectious distance.
