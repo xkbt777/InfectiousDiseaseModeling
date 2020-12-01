@@ -22,6 +22,7 @@ int main(int argc, char* argv[]) {
 
   object_t *object_pointer = NULL;
   rectangle_t *rectangle_pointer = NULL;
+  gettimeofday(&start, NULL);
 
   random_generate(TEST_SIZE, MATRIX_SIZE, seed, &object_pointer, &rectangle_pointer);
   object_statistic(object_pointer, TEST_SIZE);
@@ -31,8 +32,6 @@ int main(int argc, char* argv[]) {
   }
 
   char buf[BUF_SIZE];
-
-  gettimeofday(&start, NULL);
 
   for (int i = 0; i < ITER_TIME; i++) {
     memset(buf, 0, BUF_SIZE * sizeof(char));

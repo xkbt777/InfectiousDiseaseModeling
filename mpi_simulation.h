@@ -14,8 +14,8 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#define TEST_SIZE 10000
-#define MATRIX_SIZE 250
+#define TEST_SIZE 1000
+#define MATRIX_SIZE 100
 #define ITER_TIME 100
 #define STEP_SIZE 1.0f
 

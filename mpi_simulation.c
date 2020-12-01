@@ -91,6 +91,7 @@ int main(int argc, char* argv[]) {
   int size = static_gather(object_buffer, objects, rectangle_buffer, rectangles, self_area, rank_id);
   free(objects);
   free(rectangles);
+  object_statistic(object_buffer, size);
 
   // build r_tree if use
   r_tree_t *r_tree = NULL;
@@ -115,7 +116,6 @@ int main(int argc, char* argv[]) {
   object_t down_recv_objs[TEST_SIZE / world_size];
   int down_recv_size = 0;
 
-  printf("S: %d, F: %d, Size: %d\n", seed, use_rtree, size);
   for (int iter = 0; iter < ITER_TIME; iter++) {
 
     // search for element in ghost zone
@@ -204,12 +204,13 @@ int main(int argc, char* argv[]) {
         if (use_rtree) {
           found = search(r_tree->root, rectangle_buffer[i], &search_object);
         } else {
-          found = scan_search(object_buffer, rectangle_buffer, TEST_SIZE, rectangle_buffer[i], &search_object);
+          found = scan_search(object_buffer, rectangle_buffer, size, rectangle_buffer[i], &search_object);
         }
 
         for (int k = 0; k < found; k++) {
           contact(search_object[k], object_buffer + i, iter);
         }
+
 
         free(search_object);
       }
@@ -257,6 +258,9 @@ int main(int argc, char* argv[]) {
         free(search_object);
       }
     }
+
+    //update status
+    status_update(object_buffer, size, iter);
 
     // move objects
     if (use_rtree) {
@@ -355,6 +359,7 @@ int main(int argc, char* argv[]) {
       size -= total_rev;
       }
 
+      MPI_Barrier(MPI_COMM_WORLD);
       // object reallocate
       if (rank_id % 2 == 0) {
 
@@ -419,6 +424,7 @@ int main(int argc, char* argv[]) {
       free(down_send_objs);
       free(up_send_rects);
       free(down_send_rects);
+      MPI_Barrier(MPI_COMM_WORLD);
 
       // add received objects
       for (size_t i = 0; i < up_recv_size; i++) {
@@ -439,26 +445,40 @@ int main(int argc, char* argv[]) {
               rectangle_buffer[size++] = down_recv_buf[i];
           }
       }
+    // object_statistic(object_buffer, size);
   }
 
-
+  // gather status
+  int status_buffer[TEST_SIZE];
   if (rank_id == 0) {
     for (int i = 1; i < world_size; i++) {
-      memset(buf, 0, BUF_SIZE * sizeof(int));
-      MPI_Recv(buf, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      size += buf[0];
+      memset(status_buffer, 0, TEST_SIZE * sizeof(int));
+      MPI_Status status;
+      int recv_size = 0;
+      MPI_Recv(status_buffer, TEST_SIZE, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+      MPI_Get_count(&status, MPI_INT, &recv_size);
+
+      for (int j = 0; j < recv_size; j++) {
+        object_buffer[size++].status = status_buffer[j];
+      }
     }
   } else {
-    memset(buf, 0, BUF_SIZE * sizeof(int));
-    buf[0] = size;
-    MPI_Send(buf, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    memset(status_buffer, 0, BUF_SIZE * sizeof(int));
+    for (int i = 0; i < size; i++) {
+      status_buffer[i] = object_buffer[i].status;
+    }
+    MPI_Send(status_buffer, size, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
-  
 
+  if (rank_id == 0) {
+    object_statistic(object_buffer, TEST_SIZE);
+  }
   endTime = MPI_Wtime();
 
   MPI_Finalize();
-  printf("Total time used: %f for proc: %d, size: %d\n", endTime - startTime, rank_id, size);
+  if (rank_id == 0) {
+    printf("Total time used: %f for proc: %d, size: %d\n", endTime - startTime, rank_id, size);
+  }
   return 0;
 
 }
