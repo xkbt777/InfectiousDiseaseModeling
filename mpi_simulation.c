@@ -359,7 +359,6 @@ int main(int argc, char* argv[]) {
       size -= total_rev;
       }
 
-      MPI_Barrier(MPI_COMM_WORLD);
       // object reallocate
       if (rank_id % 2 == 0) {
 
@@ -424,7 +423,6 @@ int main(int argc, char* argv[]) {
       free(down_send_objs);
       free(up_send_rects);
       free(down_send_rects);
-      MPI_Barrier(MPI_COMM_WORLD);
 
       // add received objects
       for (size_t i = 0; i < up_recv_size; i++) {
