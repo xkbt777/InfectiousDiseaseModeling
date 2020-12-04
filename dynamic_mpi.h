@@ -18,13 +18,5 @@
 #define MATRIX_SIZE 100
 #define ITER_TIME 100
 #define STEP_SIZE 1.0f
-#define BLOCK_NUM_PER_DIM 8
-
-typedef struct block {
-  int id;
-  rectangle_t rectangle;
-}block_t;
-
-block_t **matrix_generator(int block_num_per_dim, float matrix_size);
 
 #endif
