@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "../structs/matrix.h"
 
-#define BLOCK_SIZE 2
-#define MATRIX_SIZE 128.0f
+#define BLOCK_SIZE 16
+#define MATRIX_SIZE 256.0f
 
 #endif //INFECTIOUSDISEASEMODELING_MATRIX_TEST_H

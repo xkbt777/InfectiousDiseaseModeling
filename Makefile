@@ -1,4 +1,4 @@
-EXECS = rtree_test matrix_test linear_simulation mpi_simulation
+EXECS = rtree_test matrix_test linear_simulation mpi_simulation costz_dynamic_mpi
 GCC ?= gcc
 MPICC ?= mpicc
 CFLAG = -lm -g -Wall -std=c99 -O3
@@ -32,5 +32,8 @@ linear_simulation: linear_simulation.c linear_simulation.h
 mpi_simulation: mpi_simulation.c mpi_simulation.h
 	${MPICC} -o mpi_simulation mpi_simulation.c r_tree.o object.o rectangle.o util.o ${CFLAG}
 
+costz_dynamic_mpi: costz_dynamic_mpi.c costz_dynamic_mpi.h
+	${MPICC} -o costz_dynamic_mpi costz_dynamic_mpi.c r_tree.o object.o rectangle.o util.o matrix.o ${CFLAG}
+
 clean:
-	rm -f *.o ${EXECS} object_data* tree
+	rm -f *.o ${EXECS} object_data* tree matrix

@@ -101,3 +101,9 @@ void matrix_generator_recursive(block_t **matrix, int row, int column, point_t b
                                block_index_size / 2, block_size / 2, LEFT_TO_RIGHT);
   }
 }
+
+void get_belonged_block(point_t point, int block_num_per_dim, float matrix_size, int* x, int* y) {
+  float block_side_length = matrix_size / block_num_per_dim;
+  *x = block_num_per_dim - 1 - (int)floor(point.y / block_side_length);
+  *y = (int)floor(point.x / block_side_length);
+}

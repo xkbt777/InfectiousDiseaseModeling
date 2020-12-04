@@ -21,4 +21,5 @@ typedef struct block {
 
 block_t **matrix_generator(int block_num_per_dim, float matrix_size);
 void matrix_generator_recursive(block_t **offset, int row, int column, point_t bottom_left, int start_index, int block_index_size, float block_size, int direction);
+void get_belonged_block(point_t point, int block_num_per_dim, float matrix_size, int* x, int* y);
 #endif //INFECTIOUSDISEASEMODELING_MATRIX_H
