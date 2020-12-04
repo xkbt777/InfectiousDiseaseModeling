@@ -116,8 +116,11 @@ int main(int argc, char* argv[]) {
   endTime = MPI_Wtime();
 
   MPI_Finalize();
-//  if (rank_id == 0) {
-//    printf("Total time used: %f for proc: %d, size: %d\n", endTime - startTime, rank_id, size);
-//  }
+
+  if (rank_id == 0) {
+    for (int i = 0; i < total_block; i++) {
+      printf("%d\n", block_assignment[i]);
+    }
+  }
   return 0;
 }

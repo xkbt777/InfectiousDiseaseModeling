@@ -9,7 +9,7 @@
 #include "structs/rectangle.h"
 #include "structs/object.h"
 #include "structs/r_tree.h"
-#include "structs/matrix_block.h"
+#include "structs/matrix.h"
 
 #include <stdio.h>
 #include <unistd.h>
