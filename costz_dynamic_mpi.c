@@ -9,12 +9,14 @@ int main(int argc, char* argv[]) {
 
   unsigned int seed = time(NULL);
   int opt;
-  int use_rtree = 0;
-  while ((opt = getopt(argc, argv, "rs:")) != -1) {
+  int use_rtree = 0, use_normal = 0;
+  while ((opt = getopt(argc, argv, "rns:")) != -1) {
     switch (opt) {
       case 'r':
         use_rtree = 1;
-        printf("Use r_tree\n");
+        break;
+      case 'n':
+        use_normal = 1;
         break;
       case 's':
         seed = atoi(optarg);
@@ -38,22 +40,29 @@ int main(int argc, char* argv[]) {
   startTime = MPI_Wtime();
 
   // communicate configuration
-  int buf[2];
+  int buf[BUF_SIZE];
   if (rank_id == 0) {
     buf[0] = seed;
     buf[1] = use_rtree;
-    MPI_Bcast(buf, 2, MPI_INT, 0, MPI_COMM_WORLD);
+    buf[2] = use_normal;
+    MPI_Bcast(buf, 3, MPI_INT, 0, MPI_COMM_WORLD);
   } else {
-    MPI_Bcast(buf, 2, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(buf, 3, MPI_INT, 0, MPI_COMM_WORLD);
   }
 
   seed = (unsigned int) buf[0];
   use_rtree = buf[1];
+  use_normal = buf[2];
 
   // random generate use same seed
   object_t *objects = NULL;
   rectangle_t *rectangles = NULL;
-  random_generate(TEST_SIZE, MATRIX_SIZE, seed, &objects, &rectangles);
+
+  if (use_normal) {
+    center_generate(TEST_SIZE, MATRIX_SIZE, CENTER_X, CENTER_Y, SIGMA, seed, &objects, &rectangles);
+  } else {
+    random_generate(TEST_SIZE, MATRIX_SIZE, seed, &objects, &rectangles);
+  }
 
   // count objects
   block_t** matrix_map = matrix_generator(BLOCK_NUM_PER_DIM, MATRIX_SIZE);

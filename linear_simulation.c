@@ -1,15 +1,19 @@
 #include "linear_simulation.h"
 
 int main(int argc, char* argv[]) {
-  int use_rtree = 0, print = 0;
+  int use_rtree = 0, print = 0, use_normal = 0;
   unsigned int seed = time(NULL);
   int opt;
   struct timeval start, end;
-  while ((opt = getopt(argc, argv, "rps:")) != -1) {
+  while ((opt = getopt(argc, argv, "rpns:")) != -1) {
     switch (opt) {
       case 'r':
         use_rtree = 1;
         printf("Use r_tree\n");
+        break;
+      case 'n':
+        use_normal = 1;
+        printf("Use Normal Distribution on center : %f, %f sigma: %f\n", CENTER_X, CENTER_Y, SIGMA);
         break;
       case 'p':
         print = 1;
@@ -24,7 +28,12 @@ int main(int argc, char* argv[]) {
   rectangle_t *rectangle_pointer = NULL;
   gettimeofday(&start, NULL);
 
-  random_generate(TEST_SIZE, MATRIX_SIZE, seed, &object_pointer, &rectangle_pointer);
+  if (use_normal) {
+    center_generate(TEST_SIZE, MATRIX_SIZE, CENTER_X, CENTER_Y, SIGMA, seed, &object_pointer, &rectangle_pointer);
+  } else {
+    random_generate(TEST_SIZE, MATRIX_SIZE, seed, &object_pointer, &rectangle_pointer);
+  }
+
   object_statistic(object_pointer, TEST_SIZE);
 
   if (print) {

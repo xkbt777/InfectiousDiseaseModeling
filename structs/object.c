@@ -1,5 +1,42 @@
 #include "object.h"
 
+double normal_random() {
+  double v1 = ((double) rand() + 1.) / ((double) RAND_MAX + 1.);
+  double v2 = ((double) rand() + 1.) / ((double) RAND_MAX + 1.);
+  return cos(2 * PI * v2) * sqrt(-2. * log(v1));
+}
+
+void center_generate(size_t object_number, size_t matrix_size, float center_x, float center_y, float sigma, unsigned int seed, object_t **out, rectangle_t **rec) {
+  *out = (object_t *) calloc(object_number, sizeof(object_t));
+  *rec = (rectangle_t *) calloc(object_number, sizeof(rectangle_t));
+  srand(seed);
+
+  for (int i = 0; i < object_number; i++) {
+    (*out)[i].id = i;
+    if (((float) rand() / (float) RAND_MAX) < INIT_RATE) {
+      (*out)[i].status = INFECTED;
+      (*out)[i].next_status = INFECTED;
+      (*out)[i].infected_iteration = -1;
+    } else {
+      (*out)[i].status = SUSPICIOUS;
+      (*out)[i].next_status = SUSPICIOUS;
+    }
+
+    float x = -1.0f;
+    float y = -1.0f;
+    while (x < 0.0f || x > matrix_size) {
+      x = center_x + normal_random() * sigma;
+    }
+
+    while (y < 0.0f || y > matrix_size) {
+      y = center_y + normal_random() * sigma;
+    }
+
+    (*rec)[i] = init(x - HALF_INFECT_ZONE_LENGTH, y - HALF_INFECT_ZONE_LENGTH,
+                     x + HALF_INFECT_ZONE_LENGTH, y + HALF_INFECT_ZONE_LENGTH);
+  }
+}
+
 void random_generate(size_t object_number, size_t matrix_size, unsigned int seed, object_t **out, rectangle_t **rec) {
   *out = (object_t *) calloc(object_number, sizeof(object_t));
   *rec = (rectangle_t *) calloc(object_number, sizeof(rectangle_t));

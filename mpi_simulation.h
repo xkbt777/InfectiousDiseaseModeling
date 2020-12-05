@@ -14,10 +14,13 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#define TEST_SIZE 1000
-#define MATRIX_SIZE 100
+#define TEST_SIZE 10000
+#define MATRIX_SIZE 250
 #define ITER_TIME 100
 #define STEP_SIZE 1.0f
+#define CENTER_X 125.0f
+#define CENTER_Y 125.0f
+#define SIGMA 25.0f
 
 int static_gather(object_t *dst, object_t *src, rectangle_t *rectangle_dst, rectangle_t *rectangle_src, rectangle_t target, int rank_id);
 
