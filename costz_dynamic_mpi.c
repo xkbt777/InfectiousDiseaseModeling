@@ -67,17 +67,17 @@ int main(int argc, char* argv[]) {
   // count objects
   block_t** matrix_map = matrix_generator(BLOCK_NUM_PER_DIM, MATRIX_SIZE);
   long total_block = BLOCK_NUM_PER_DIM * BLOCK_NUM_PER_DIM;
-  int count_size = total_block / world_size;
-  int start_block_idx = rank_id * count_size;
-  int buffer_size = rank_id == 0 ? total_block : count_size + 1;
+  int count_size = TEST_SIZE / world_size;
+  int start_object_idx = rank_id * count_size;
+  int buffer_size = total_block;
   int count_buffer[buffer_size];
   memset(count_buffer, 0, buffer_size * sizeof(int));
+  count_size = rank_id == world_size - 1 ? TEST_SIZE - count_size * (world_size - 1) : count_size;
 
-  for (size_t i = 0; i < TEST_SIZE; i++) {
+  for (size_t i = start_object_idx; i < start_object_idx + count_size; i++) {
     int block_x, block_y;
     get_belonged_block(mid_point(rectangles[i]), BLOCK_NUM_PER_DIM, MATRIX_SIZE, &block_x, &block_y);
-    int block_idx = matrix_map[block_x][block_y].id;
-    if (block_idx >= start_block_idx && block_idx < start_block_idx + count_size) {
+    count_buffer[matrix_map[block_x][block_y].id]++;
 //      printf("block %.2f % .2f %.2f %.2f contains point %.2f %.2f is %d\n",
 //              matrix_map[block_x][block_y].rectangle.bottom_left.x,
 //              matrix_map[block_x][block_y].rectangle.bottom_left.y,
@@ -85,25 +85,26 @@ int main(int argc, char* argv[]) {
 //              matrix_map[block_x][block_y].rectangle.top_right.y,
 //              mid_point(rectangles[i]).x, mid_point(rectangles[i]).y,
 //              if_cover_point(matrix_map[block_x][block_y].rectangle, mid_point(rectangles[i]), 1, 1, 1, 1));
-      count_buffer[block_idx - start_block_idx]++;
-    }
   }
 
   if (rank_id == 0) {
-    int recv_buffer[count_size + 1];
+    int recv_buffer[total_block];
     for (size_t i = 1; i < world_size; i++) {
       MPI_Status status;
-      MPI_Recv(recv_buffer, count_size + 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+      MPI_Recv(recv_buffer, total_block, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
-      int start = recv_buffer[count_size];
-      for (size_t j = 0; j < count_size; j++) {
-        count_buffer[start + j] = recv_buffer[j];
-//        printf("Block %d has %d objects\n", start + j, count_buffer[start + j]);
+      for (size_t j = 0; j < total_block; j++) {
+        count_buffer[j] += recv_buffer[j];
       }
     }
+//    int sum = 0;
+//    for (size_t i = 0; i < total_block; i++) {
+//      printf("Block %zu has %d objects\n", i, count_buffer[i]);
+//      sum += count_buffer[i];
+//    }
+//    printf("all blocks have %d objects\n", sum);
   } else {
-    count_buffer[count_size] = start_block_idx;
-    MPI_Send(count_buffer, buffer_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_Send(count_buffer, total_block, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
 
   // assign and broadcast
@@ -170,7 +171,6 @@ int main(int argc, char* argv[]) {
       size++;
     }
   }
-
 
 
   for (size_t iter = 0; iter < ITER_TIME; iter++) {
