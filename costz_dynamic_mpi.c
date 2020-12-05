@@ -78,6 +78,13 @@ int main(int argc, char* argv[]) {
     get_belonged_block(mid_point(rectangles[i]), BLOCK_NUM_PER_DIM, MATRIX_SIZE, &block_x, &block_y);
     int block_idx = matrix_map[block_x][block_y].id;
     if (block_idx >= start_block_idx && block_idx < start_block_idx + count_size) {
+//      printf("block %.2f % .2f %.2f %.2f contains point %.2f %.2f is %d\n",
+//              matrix_map[block_x][block_y].rectangle.bottom_left.x,
+//              matrix_map[block_x][block_y].rectangle.bottom_left.y,
+//              matrix_map[block_x][block_y].rectangle.top_right.x,
+//              matrix_map[block_x][block_y].rectangle.top_right.y,
+//              mid_point(rectangles[i]).x, mid_point(rectangles[i]).y,
+//              if_cover_point(matrix_map[block_x][block_y].rectangle, mid_point(rectangles[i]), 1, 1, 1, 1));
       count_buffer[block_idx - start_block_idx]++;
     }
   }
@@ -93,6 +100,13 @@ int main(int argc, char* argv[]) {
         count_buffer[start + j] = recv_buffer[j];
       }
     }
+
+    int obj_sum = 0;
+    for (int i = 0; i < total_block; i++) {
+      printf("Block %d has %d objects\n", i, count_buffer[i]);
+      obj_sum += count_buffer[i];
+    }
+    printf("Sum: %d\n", obj_sum);
   } else {
     count_buffer[count_size] = start_block_idx;
     MPI_Send(count_buffer, buffer_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
@@ -103,20 +117,29 @@ int main(int argc, char* argv[]) {
   if (rank_id == 0) {
     int assign_worker_id = 0;
     size_t assign_i = 0;
-    long assigned_size = 0;
-    long assign_target = TEST_SIZE / world_size;
+    int assigned_size = 0;
+    int assign_target = TEST_SIZE / world_size;
     while (assign_i < total_block && assign_worker_id < world_size - 1) {
       assigned_size += count_buffer[assign_i];
       block_assignment[assign_i] = assign_worker_id;
+      printf("Block %zu is assigned to worker %d\n", assign_i, assign_worker_id);
       assign_i++;
-      int need_next = assigned_size < assign_target && assign_i < total_block
-                      && assigned_size + count_buffer[assign_i] >= assign_target
-                      && assigned_size + count_buffer[assign_i] - assign_target >= assign_target - assigned_size;
-      if (assigned_size >= assign_target || need_next) {
+      if (assigned_size >= assign_target || assign_i >= total_block
+          || (assigned_size + count_buffer[assign_i] >= assign_target
+              && assigned_size + count_buffer[assign_i] - assign_target >= assign_target - assigned_size)) {
+        printf("Assign %d objects to worker %d\n", assigned_size, assign_worker_id);
         assign_worker_id++;
+        assigned_size = 0;
       }
     }
-    memset(block_assignment + assign_i, assign_worker_id, (total_block - assign_i) * sizeof(int));
+    while (assign_i < total_block) {
+      assigned_size += count_buffer[assign_i];
+      block_assignment[assign_i] = assign_worker_id;
+      printf("Block %zu is assigned to worker %d\n", assign_i, assign_worker_id);
+      assign_i++;
+    }
+    printf("Assign %d objects to worker %d\n", assigned_size, assign_worker_id);
+//    memset(block_assignment + assign_i, assign_worker_id, (total_block - assign_i) * sizeof(int));
     MPI_Bcast(block_assignment, total_block, MPI_INT, 0, MPI_COMM_WORLD);
   } else {
     MPI_Bcast(block_assignment, total_block, MPI_INT, 0, MPI_COMM_WORLD);
@@ -128,8 +151,9 @@ int main(int argc, char* argv[]) {
 
   if (rank_id == 0) {
     for (int i = 0; i < total_block; i++) {
-      printf("%d\n", block_assignment[i]);
+      printf("%d", block_assignment[i]);
     }
+    printf("\n");
   }
   return 0;
 }
