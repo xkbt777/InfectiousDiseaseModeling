@@ -19,7 +19,7 @@ typedef struct node {
   size_t node_type;
   size_t node_size;
   rectangle_t rectangle;
-  object_t *object;
+  object_t object;
   struct node *entries[MAX_ENTRY_SIZE + 1];
 }node_t;
 

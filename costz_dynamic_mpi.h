@@ -17,7 +17,7 @@
 
 #define TEST_SIZE 1000
 #define MATRIX_SIZE 250
-#define ITER_TIME 100
+#define ITER_TIME 3
 #define STEP_SIZE 1.0f
 #define BLOCK_NUM_PER_DIM 8
 #define CENTER_X 125.0f

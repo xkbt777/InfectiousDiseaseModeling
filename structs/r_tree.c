@@ -57,7 +57,7 @@ size_t search(node_t *node, rectangle_t area, object_t ***objects) {
     // printf("Object ID: %ld\n", node->entries[i]->object->id);
     // printf("outcome: %d\n", intersect(node->entries[i]->rectangle, area));
     if (intersect(node->entries[i]->rectangle, area)) {
-      objects_pointers[size_sum] = node->entries[i]->object;
+      objects_pointers[size_sum] = &node->entries[i]->object;
       size_sum += 1;
     }
   }
@@ -109,7 +109,7 @@ size_t search_infect_rec(node_t *node, rectangle_t area, rectangle_t **recs) {
   for (int i = 0; i < node->node_size; i++) {
     // printf("Object ID: %ld\n", node->entries[i]->object->id);
     // printf("outcome: %d\n", intersect(node->entries[i]->rectangle, area));
-    if (node->entries[i]->object->status == INFECTED && intersect(node->entries[i]->rectangle, area)) {
+    if (node->entries[i]->object.status == INFECTED && intersect(node->entries[i]->rectangle, area)) {
       rec_pointers[size_sum] = node->entries[i]->rectangle;
       size_sum += 1;
     }
@@ -168,7 +168,7 @@ size_t search_with_rect(node_t *node, rectangle_t area, object_t **objects, rect
         // printf("Object ID: %ld\n", node->entries[i]->object->id);
         // printf("outcome: %d\n", intersect(node->entries[i]->rectangle, area));
         if (intersect(node->entries[i]->rectangle, area)) {
-            objects_pointers[size_sum] = *(node->entries[i]->object);
+            objects_pointers[size_sum] = node->entries[i]->object;
             rectangle_pointers[size_sum] = node->entries[i]->rectangle;
             size_sum += 1;
         }
@@ -230,7 +230,7 @@ void free_rtree(r_tree_t* r_tree) {
 void random_move_rtree_objects(node_t* node, float step, int matrix_size) {
   if (node->node_type == LEAF) {
     for (size_t i = 0; i < node->node_size; i++) {
-      random_object_move(node->entries[i]->object, &node->entries[i]->rectangle, step, matrix_size);
+      random_object_move(&node->entries[i]->object, &node->entries[i]->rectangle, step, matrix_size);
       if (i == 0) {
         node->rectangle = node->entries[i]->rectangle;
       } else {
@@ -254,7 +254,7 @@ node_t* choose_and_insert(node_t* node, node_t* parent, rectangle_t o_area, obje
         node_t* new_obj = (node_t*) malloc(sizeof(node_t));
         new_obj->node_type = OBJECT;
         new_obj->rectangle = o_area;
-        new_obj->object = object;
+        new_obj->object = *object;
         node->entries[node->node_size++] = new_obj;
         if (node->node_size == 1) {
             node->rectangle = o_area;
@@ -412,7 +412,7 @@ node_t* find_and_delete(node_t* node, node_t* parent, rectangle_t o_area, object
     if (node->node_type == LEAF) {
         size_t i;
         for (i = 0; i < node->node_size; i++) {
-            if (node->entries[i]->object == target || if_same_rectangle(node->entries[i]->rectangle, o_area)) {
+            if (&node->entries[i]->object == target || if_same_rectangle(node->entries[i]->rectangle, o_area)) {
 //                printf("Delete object %.2f %.2f %.2f %.2f\n",
 //                        node->entries[i]->rectangle.bottom_left.x, node->entries[i]->rectangle.bottom_left.y,
 //                       node->entries[i]->rectangle.top_right.x, node->entries[i]->rectangle.top_right.y);
@@ -491,7 +491,7 @@ void reinsert_node(node_t* root, node_t* node) {
 //            printf("Reinsert %.2f %.2f %.2f %.2f\n",
 //                   node->entries[i]->rectangle.bottom_left.x, node->entries[i]->rectangle.bottom_left.y,
 //                   node->entries[i]->rectangle.top_right.x, node->entries[i]->rectangle.top_right.y);
-            choose_and_insert(root, NULL, node->entries[i]->rectangle, node->entries[i]->object);
+            choose_and_insert(root, NULL, node->entries[i]->rectangle, &node->entries[i]->object);
         }
     } else {
         size_t i;
@@ -533,13 +533,11 @@ void print_tree(node_t* node, int level) {
 }
 
 void free_node(node_t* node) {
-    if (node->node_type == OBJECT) {
-//        free(node->object);
-    } else {
-        int i;
-        for (i = 0; i < node->node_size; i++) {
-            free_node(node->entries[i]);
-        }
+    if (node->node_type != OBJECT) {
+      int i;
+      for (i = 0; i < node->node_size; i++) {
+        free_node(node->entries[i]);
+      }
     }
 
     free(node);
