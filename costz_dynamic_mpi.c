@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
   while (block_assignment[start_index] != rank_id) {
     start_index++;
   }
-  while (block_assignment[start_index + block_size] == rank_id) {
+  while (start_index + block_size < total_block && block_assignment[start_index + block_size] == rank_id) {
     block_size++;
   }
 
@@ -171,6 +171,7 @@ int main(int argc, char* argv[]) {
       size++;
     }
   }
+  printf("Worker %d is assigned block %d to %d and gathered %d objects\n", rank_id, start_index, start_index + block_size - 1, size);
 
 
   for (size_t iter = 0; iter < ITER_TIME; iter++) {
@@ -249,7 +250,7 @@ int main(int argc, char* argv[]) {
       MPI_Recv(rectangle_buffer + size, 4 * TEST_SIZE, MPI_FLOAT, i, 0, MPI_COMM_WORLD, &status);
       MPI_Get_count(&status, MPI_FLOAT, &recv_size);
       recv_size = recv_size / 4;
-      MPI_Recv(object_buffer + size, 4 * recv_size, MPI_UNSIGNED, i, 0, MPI_COMM_WORLD, &status);
+      MPI_Recv(object_buffer + size, 4 * recv_size, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
 
       if (use_rtree) {
         for (size_t j = 0; j < recv_size; j++) {
@@ -262,7 +263,7 @@ int main(int argc, char* argv[]) {
     for (size_t j = 0; j < world_size; j++) {
       if (j != rank_id) {
         MPI_Send(send_rects[j], send_size[j] * 4, MPI_FLOAT, j, 0, MPI_COMM_WORLD);
-        MPI_Send(send_objs[j], send_size[j] * 4, MPI_UNSIGNED, j, 0, MPI_COMM_WORLD);
+        MPI_Send(send_objs[j], send_size[j] * 4, MPI_INT, j, 0, MPI_COMM_WORLD);
       }
     }
     for (size_t i = rank_id + 1; i < world_size; i++) {
@@ -271,7 +272,7 @@ int main(int argc, char* argv[]) {
       MPI_Recv(rectangle_buffer + size, 4 * TEST_SIZE, MPI_FLOAT, i, 0, MPI_COMM_WORLD, &status);
       MPI_Get_count(&status, MPI_FLOAT, &recv_size);
       recv_size = recv_size / 4;
-      MPI_Recv(object_buffer + size, 4 * recv_size, MPI_UNSIGNED, i, 0, MPI_COMM_WORLD, &status);
+      MPI_Recv(object_buffer + size, 4 * recv_size, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
 
       if (use_rtree) {
         for (size_t j = 0; j < recv_size; j++) {
@@ -300,11 +301,12 @@ int main(int argc, char* argv[]) {
     for (int i = 1; i < world_size; i++) {
       int recv_size;
       MPI_Status status;
-      MPI_Recv(rectangle_buffer + size, 4 * TEST_SIZE, MPI_FLOAT, i, 0, MPI_COMM_WORLD, &status);
+      MPI_Recv(rectangle_buffer + size, 4 * TEST_SIZE, MPI_FLOAT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
       MPI_Get_count(&status, MPI_FLOAT, &recv_size);
       recv_size = recv_size / 4;
-      MPI_Recv(object_buffer + size, 4 * recv_size, MPI_UNSIGNED, i, 0, MPI_COMM_WORLD, &status);
+      MPI_Recv(object_buffer + size, 4 * recv_size, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD, &status);
       size += recv_size;
+//      printf("Receive %d objects from worker %d\n", recv_size, status.MPI_SOURCE);
     }
   } else {
     if (use_rtree) {
@@ -312,13 +314,14 @@ int main(int argc, char* argv[]) {
       rectangle_t* all_rectangles = NULL;
       search_with_rect(r_tree->root, r_tree->root->rectangle, &all_objects, &all_rectangles);
       MPI_Send(all_rectangles, size * 4, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
-      MPI_Send(all_objects, size * 4, MPI_UNSIGNED, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(all_objects, size * 4, MPI_INT, 0, 0, MPI_COMM_WORLD);
       free(all_objects);
       free(all_rectangles);
     } else {
       MPI_Send(rectangle_buffer, size * 4, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
-      MPI_Send(object_buffer, size * 4, MPI_UNSIGNED, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(object_buffer, size * 4, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
+//    printf("Worker %d send %d objects\n", rank_id, size);
   }
 
   endTime = MPI_Wtime();

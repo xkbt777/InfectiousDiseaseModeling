@@ -373,28 +373,28 @@ int main(int argc, char* argv[]) {
           // down send and recv
           if (rank_id > 0) {
               MPI_Send(down_send_rects, 4 * down_send_size, MPI_FLOAT, rank_id - 1, 0, MPI_COMM_WORLD);
-              MPI_Send(down_send_objs, 4 * down_send_size, MPI_UNSIGNED, rank_id - 1, 0, MPI_COMM_WORLD);
+              MPI_Send(down_send_objs, 4 * down_send_size, MPI_INT, rank_id - 1, 0, MPI_COMM_WORLD);
 //              printf("%d sends %zu objects to %d at iteration %d\n", rank_id, down_send_size, rank_id - 1, iter);
 
               MPI_Status status;
               MPI_Recv(down_recv_buf, 4 * TEST_SIZE / world_size, MPI_FLOAT, rank_id - 1, 0, MPI_COMM_WORLD, &status);
               MPI_Get_count(&status, MPI_FLOAT, &down_recv_size);
               down_recv_size = down_recv_size / 4;
-              MPI_Recv(down_recv_objs, 4 * down_recv_size, MPI_UNSIGNED, rank_id - 1, 0, MPI_COMM_WORLD, &status);
+              MPI_Recv(down_recv_objs, 4 * down_recv_size, MPI_INT, rank_id - 1, 0, MPI_COMM_WORLD, &status);
 //            printf("%d receives %d objects to %d at iteration %d\n", rank_id, down_recv_size, rank_id - 1, iter);
           }
 
           // up send and recv
           if (rank_id < world_size - 1) {
               MPI_Send(up_send_rects, 4 * up_send_size, MPI_FLOAT, rank_id + 1, 0, MPI_COMM_WORLD);
-              MPI_Send(up_send_objs, 4 * up_send_size, MPI_UNSIGNED, rank_id + 1, 0, MPI_COMM_WORLD);
+              MPI_Send(up_send_objs, 4 * up_send_size, MPI_INT, rank_id + 1, 0, MPI_COMM_WORLD);
 //              printf("%d sends %zu objects to %d at iteration %d\n", rank_id, up_send_size, rank_id + 1, iter);
 
               MPI_Status status;
               MPI_Recv(up_recv_buf, 4 * TEST_SIZE / world_size, MPI_FLOAT, rank_id + 1, 0, MPI_COMM_WORLD, &status);
               MPI_Get_count(&status, MPI_FLOAT, &up_recv_size);
               up_recv_size = up_recv_size / 4;
-              MPI_Recv(up_recv_objs, 4 * up_recv_size, MPI_UNSIGNED, rank_id + 1, 0, MPI_COMM_WORLD, &status);
+              MPI_Recv(up_recv_objs, 4 * up_recv_size, MPI_INT, rank_id + 1, 0, MPI_COMM_WORLD, &status);
 //            printf("%d receives %d objects to %d at iteration %d\n", rank_id, up_recv_size, rank_id + 1, iter);
           }
       } else {
@@ -404,11 +404,11 @@ int main(int argc, char* argv[]) {
               MPI_Recv(up_recv_buf, 4 * TEST_SIZE / world_size, MPI_FLOAT, rank_id + 1, 0, MPI_COMM_WORLD, &status);
               MPI_Get_count(&status, MPI_FLOAT, &up_recv_size);
               up_recv_size = up_recv_size / 4;
-              MPI_Recv(down_recv_objs, 4 * up_recv_size, MPI_UNSIGNED, rank_id + 1, 0, MPI_COMM_WORLD, &status);
+              MPI_Recv(down_recv_objs, 4 * up_recv_size, MPI_INT, rank_id + 1, 0, MPI_COMM_WORLD, &status);
 //            printf("%d receives %d objects to %d at iteration %d\n", rank_id, up_recv_size, rank_id + 1, iter);
 
               MPI_Send(up_send_rects, 4 * up_send_size, MPI_FLOAT, rank_id + 1, 0, MPI_COMM_WORLD);
-              MPI_Send(up_send_objs, 4 * up_send_size, MPI_UNSIGNED, rank_id + 1, 0, MPI_COMM_WORLD);
+              MPI_Send(up_send_objs, 4 * up_send_size, MPI_INT, rank_id + 1, 0, MPI_COMM_WORLD);
 //            printf("%d sends %zu objects to %d at iteration %d\n", rank_id, up_send_size, rank_id + 1, iter);
           }
 
@@ -418,11 +418,11 @@ int main(int argc, char* argv[]) {
               MPI_Recv(down_recv_buf, 4 * TEST_SIZE / world_size, MPI_FLOAT, rank_id - 1, 0, MPI_COMM_WORLD, &status);
               MPI_Get_count(&status, MPI_FLOAT, &down_recv_size);
               down_recv_size = down_recv_size / 4;
-              MPI_Recv(down_recv_objs, 4 * down_recv_size, MPI_UNSIGNED, rank_id - 1, 0, MPI_COMM_WORLD, &status);
+              MPI_Recv(down_recv_objs, 4 * down_recv_size, MPI_INT, rank_id - 1, 0, MPI_COMM_WORLD, &status);
 //            printf("%d receives %d objects to %d at iteration %d\n", rank_id, down_recv_size, rank_id - 1, iter);
 
               MPI_Send(down_send_rects, 4 * down_send_size, MPI_FLOAT, rank_id - 1, 0, MPI_COMM_WORLD);
-              MPI_Send(down_send_objs, 4 * down_send_size, MPI_UNSIGNED, rank_id - 1, 0, MPI_COMM_WORLD);
+              MPI_Send(down_send_objs, 4 * down_send_size, MPI_INT, rank_id - 1, 0, MPI_COMM_WORLD);
 //            printf("%d sends %d objects to %zu at iteration %d\n", rank_id, down_send_size, rank_id - 1, iter);
           }
       }

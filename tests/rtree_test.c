@@ -10,7 +10,7 @@ int main() {
   object_to_file(object_pointer, rectangle_pointer, TEST_SIZE, "objects", MATRIX_SIZE);
 
   for (int i = 0; i < 10; i++) {
-    printf("Object status: %zu, left: %f, bottom: %f\n", object_pointer[i].status, rectangle_pointer[i].bottom_left.x, rectangle_pointer[i].bottom_left.y);
+    printf("Object status: %d, left: %f, bottom: %f\n", object_pointer[i].status, rectangle_pointer[i].bottom_left.x, rectangle_pointer[i].bottom_left.y);
   }
 
   r_tree_t *r_tree = init_rtree();
@@ -38,7 +38,7 @@ int main() {
   size_t found = scan_search(object_pointer, rectangle_pointer, 10, init(2, 2, 5, 5), &search_object);
 
   for (int i = 0; i < found; i++) {
-    printf("Object id: %ld\n", search_object[i]->id);
+    printf("Object id: %d\n", search_object[i]->id);
   }
 
   free(search_object);
@@ -46,7 +46,7 @@ int main() {
   found = search(r_tree->root, init(2, 2, 5, 5), &search_object);
 
   for (int i = 0; i < found; i++) {
-    printf("Object id: %ld\n", search_object[i]->id);
+    printf("Object id: %d\n", search_object[i]->id);
   }
   free(search_object);
   free_rtree(r_tree);

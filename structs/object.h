@@ -30,10 +30,10 @@
 #define to_deg(x) (x * PI / 180)
 
 typedef struct {
-    size_t id;
-    size_t status;
-    size_t next_status;
-    size_t infected_iteration;
+    int id;
+    int status;
+    int next_status;
+    int infected_iteration;
 }object_t;
 
 double normal_random();
