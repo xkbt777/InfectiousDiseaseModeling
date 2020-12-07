@@ -277,16 +277,23 @@ int main(int argc, char* argv[]) {
     // move objects
     if (use_rtree) {
       // propagate up forward
-      random_move_rtree_objects(r_tree->root, STEP_SIZE, MATRIX_SIZE);
-      object_t* all_objects = NULL;
-      rectangle_t* all_rectangles = NULL;
-      search_with_rect(r_tree->root, r_tree->root->rectangle, &all_objects, &all_rectangles);
-      for (size_t i = 0; i < size; i++) {
-        object_buffer[i] = all_objects[i];
-        rectangle_buffer[i] = all_rectangles[i];
+      if (iter % RECONSTRUCTION_ITER == 0) {
+        object_t* all_objects = NULL;
+        rectangle_t* all_rectangles = NULL;
+        search_with_rect(r_tree->root, r_tree->root->rectangle, &all_objects, &all_rectangles);
+        free_rtree(r_tree);
+        r_tree = init_rtree();
+        for (size_t i = 0; i < size; i++) {
+          object_buffer[i] = all_objects[i];
+          rectangle_buffer[i] = all_rectangles[i];
+          random_object_move(object_buffer + i, rectangle_buffer + i, STEP_SIZE, (float) MATRIX_SIZE);
+          insert(r_tree->root, object_buffer + i, rectangle_buffer[i]);
+        }
+        free(all_objects);
+        free(all_rectangles);
+      } else {
+        random_move_rtree_objects(r_tree->root, STEP_SIZE, MATRIX_SIZE);
       }
-      free(all_objects);
-      free(all_rectangles);
 
 
       /*
@@ -382,7 +389,7 @@ int main(int argc, char* argv[]) {
         rectangle_buffer[removed_idx[j]] = rectangle_buffer[full_pointer--];
       }
       size -= total_rev;
-      }
+    }
 
       // object reallocate
       if (rank_id % 2 == 0) {
@@ -468,6 +475,18 @@ int main(int argc, char* argv[]) {
               rectangle_buffer[size++] = down_recv_buf[i];
           }
       }
+
+    if (use_rtree) {
+      object_t* all_objects = NULL;
+      rectangle_t* all_rectangles = NULL;
+      search_with_rect(r_tree->root, r_tree->root->rectangle, &all_objects, &all_rectangles);
+      for (size_t i = 0; i < size; i++) {
+        object_buffer[i] = all_objects[i];
+        rectangle_buffer[i] = all_rectangles[i];
+      }
+      free(all_objects);
+      free(all_rectangles);
+    }
     // object_statistic(object_buffer, size);
   }
 

@@ -18,6 +18,7 @@
 #define TEST_SIZE 10000
 #define MATRIX_SIZE 250.0f
 #define ITER_TIME 100
+#define RECONSTRUCTION_ITER 20
 #define STEP_SIZE 1.0f
 #define BLOCK_NUM_PER_DIM 8
 #define CENTER_X 125.0f
