@@ -556,3 +556,25 @@ void tree_to_file(node_t* node, FILE *file, int level) {
            node->rectangle.top_right.x, node->rectangle.top_right.y);
   }
 }
+
+void tree_update(node_t* root, int cur_iter) {
+  if (root == NULL) {
+    return;
+  }
+
+  if (root->node_type != OBJECT) {
+    for (int i = 0; i < root->node_size; i++) {
+      tree_update(root->entries[i], cur_iter);
+    }
+    return;
+  }
+
+  // recovery check
+  if (root->object.status == INFECTED && cur_iter - root->object.infected_iteration >= RECOVER_THRESHOLD) {
+    if (((float) rand() / (float) RAND_MAX) < RECOVER_RATE) {
+      root->object.status = RECOVERED;
+      root->object.next_status = RECOVERED;
+    }
+  }
+  root->object.status = root->object.next_status;
+}

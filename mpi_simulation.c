@@ -268,13 +268,28 @@ int main(int argc, char* argv[]) {
     }
 
     //update status
-    status_update(object_buffer, size, iter);
+    if (use_rtree) {
+      tree_update(r_tree->root, iter);
+    } else {
+      status_update(object_buffer, size, iter);
+    }
 
     // move objects
     if (use_rtree) {
       // propagate up forward
-//      random_move_rtree_objects(r_tree->root, STEP_SIZE, MATRIX_SIZE);
+      random_move_rtree_objects(r_tree->root, STEP_SIZE, MATRIX_SIZE);
+      object_t* all_objects = NULL;
+      rectangle_t* all_rectangles = NULL;
+      search_with_rect(r_tree->root, r_tree->root->rectangle, &all_objects, &all_rectangles);
+      for (size_t i = 0; i < size; i++) {
+        object_buffer[i] = all_objects[i];
+        rectangle_buffer[i] = all_rectangles[i];
+      }
+      free(all_objects);
+      free(all_rectangles);
 
+
+      /*
       // reconstruct rtree
       object_t* all_objects = NULL;
       rectangle_t* all_rectangles = NULL;
@@ -289,6 +304,8 @@ int main(int argc, char* argv[]) {
       }
       free(all_objects);
       free(all_rectangles);
+       */
+
     } else {
       for (size_t i = 0; i < size; i++) {
         random_object_move(object_buffer + i, rectangle_buffer + i, STEP_SIZE, (float) MATRIX_SIZE);

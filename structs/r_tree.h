@@ -46,5 +46,6 @@ void copy_node(node_t* src, node_t* dest);
 void print_tree(node_t* node, int level);
 void tree_to_file(node_t* node, FILE *file, int level);
 void free_node(node_t* root);
+void tree_update(node_t* root, int cur_iter);
 
 #endif //INFECTIOUSDISEASEMODELING_R_TREE_H

@@ -89,7 +89,11 @@ int main(int argc, char* argv[]) {
     }
 
     // status update
-    status_update(object_pointer, TEST_SIZE, i);
+    if (use_rtree) {
+      tree_update(r_tree->root, i);
+    } else {
+      status_update(object_pointer, TEST_SIZE, i);
+    }
 
     // print to file
     if (print) {
@@ -97,6 +101,9 @@ int main(int argc, char* argv[]) {
     }
 
     if (use_rtree) {
+      free(object_pointer);
+      free(rectangle_pointer);
+      search_with_rect(r_tree->root, r_tree->root->rectangle, &object_pointer, &rectangle_pointer);
       free_rtree(r_tree);
     }
     object_statistic(object_pointer, TEST_SIZE);
