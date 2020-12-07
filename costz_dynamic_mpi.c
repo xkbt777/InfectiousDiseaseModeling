@@ -5,6 +5,140 @@
 #include <mpi.h>
 #include "costz_dynamic_mpi.h"
 
+void found_all_adjacent(block_t **matrix_map, int *block_assignment, int rank_id, int world_size, int *rec_num, rectangle_t ***ghost_zones) {
+  *ghost_zones = (rectangle_t **) calloc(world_size, sizeof(rectangle_t *));
+
+  for (int i = 0; i < world_size; i++) {
+    rec_num[i] = 0;
+    (*ghost_zones)[i] = (rectangle_t *) calloc(BUF_SIZE, sizeof(rectangle_t));
+  }
+
+  for (int r = 0; r < BLOCK_NUM_PER_DIM; r++) {
+    for (int c = 0; c < BLOCK_NUM_PER_DIM; c++) {
+      if (block_assignment[matrix_map[r][c].id] == rank_id) {
+
+        // search top
+        if (r < BLOCK_NUM_PER_DIM - 1 && block_assignment[matrix_map[r + 1][c].id] != rank_id) {
+          int adjacent_id = block_assignment[matrix_map[r + 1][c].id];
+          rectangle_t ghost_zone = init(matrix_map[r][c].rectangle.bottom_left.x,
+                                        matrix_map[r][c].rectangle.top_right.y - HALF_INFECT_ZONE_LENGTH,
+                                        matrix_map[r][c].rectangle.top_right.x,
+                                        matrix_map[r][c].rectangle.top_right.y);
+          (*ghost_zones)[adjacent_id][rec_num[adjacent_id]] = ghost_zone;
+          rec_num[adjacent_id] += 1;
+        }
+
+        // search bottom
+        if (r > 0 && block_assignment[matrix_map[r - 1][c].id] != rank_id) {
+          int adjacent_id = block_assignment[matrix_map[r - 1][c].id];
+          // printf("bottom relation at %d %d, %d, %d\n", r, c, rank_id, adjacent_id);
+          rectangle_t ghost_zone = init(matrix_map[r][c].rectangle.bottom_left.x,
+                                        matrix_map[r][c].rectangle.bottom_left.y,
+                                        matrix_map[r][c].rectangle.top_right.x,
+                                        matrix_map[r][c].rectangle.bottom_left.y + HALF_INFECT_ZONE_LENGTH);
+          (*ghost_zones)[adjacent_id][rec_num[adjacent_id]] = ghost_zone;
+          rec_num[adjacent_id] += 1;
+        }
+
+        // search right
+        if (c < BLOCK_NUM_PER_DIM - 1 && block_assignment[matrix_map[r][c + 1].id] != rank_id) {
+          int adjacent_id = block_assignment[matrix_map[r][c + 1].id];
+          // printf("right relation at %d %d, %d, %d\n", r, c, rank_id, adjacent_id);
+          rectangle_t ghost_zone = init(matrix_map[r][c].rectangle.top_right.x - HALF_INFECT_ZONE_LENGTH,
+                                        matrix_map[r][c].rectangle.bottom_left.y,
+                                        matrix_map[r][c].rectangle.top_right.x,
+                                        matrix_map[r][c].rectangle.top_right.y);
+          (*ghost_zones)[adjacent_id][rec_num[adjacent_id]] = ghost_zone;
+          rec_num[adjacent_id] += 1;
+        }
+
+        // search left
+        if (c > 0 && block_assignment[matrix_map[r][c - 1].id] != rank_id) {
+          int adjacent_id = block_assignment[matrix_map[r][c - 1].id];
+          //printf("left relation at %d %d, %d, %d\n", r, c, rank_id, adjacent_id);
+          rectangle_t ghost_zone = init(matrix_map[r][c].rectangle.bottom_left.x,
+                                        matrix_map[r][c].rectangle.bottom_left.y,
+                                        matrix_map[r][c].rectangle.bottom_left.x + HALF_INFECT_ZONE_LENGTH,
+                                        matrix_map[r][c].rectangle.top_right.y);
+          (*ghost_zones)[adjacent_id][rec_num[adjacent_id]] = ghost_zone;
+          rec_num[adjacent_id] += 1;
+        }
+
+        // search topRight
+        if (r < BLOCK_NUM_PER_DIM - 1 && c < BLOCK_NUM_PER_DIM - 1 &&
+            block_assignment[matrix_map[r + 1][c + 1].id] != rank_id) {
+          int adjacent_id = block_assignment[matrix_map[r + 1][c + 1].id];
+
+          if (adjacent_id != block_assignment[matrix_map[r][c + 1].id] &&
+            adjacent_id != block_assignment[matrix_map[r + 1][c].id] &&
+            rank_id != block_assignment[matrix_map[r][c + 1].id] &&
+            rank_id != block_assignment[matrix_map[r + 1][c].id]) {
+            // printf("topRIght relation at %d %d, %d, %d\n", r, c, rank_id, adjacent_id);
+            rectangle_t ghost_zone = init(matrix_map[r][c].rectangle.top_right.x - HALF_INFECT_ZONE_LENGTH,
+                                          matrix_map[r][c].rectangle.top_right.y - HALF_INFECT_ZONE_LENGTH,
+                                          matrix_map[r][c].rectangle.top_right.x,
+                                          matrix_map[r][c].rectangle.top_right.y);
+            (*ghost_zones)[adjacent_id][rec_num[adjacent_id]] = ghost_zone;
+            rec_num[adjacent_id] += 1;
+          }
+        }
+
+        // search bottomRight
+        if (r > 0 && c < BLOCK_NUM_PER_DIM - 1 && block_assignment[matrix_map[r - 1][c + 1].id] != rank_id) {
+          int adjacent_id = block_assignment[matrix_map[r - 1][c + 1].id];
+
+          if (adjacent_id != block_assignment[matrix_map[r - 1][c].id] &&
+              adjacent_id != block_assignment[matrix_map[r][c + 1].id] &&
+              rank_id != block_assignment[matrix_map[r - 1][c].id] &&
+              rank_id != block_assignment[matrix_map[r][c + 1].id]) {
+            // printf("bottomRIght relation at %d %d, %d, %d\n", r, c, rank_id, adjacent_id);
+            rectangle_t ghost_zone = init(matrix_map[r][c].rectangle.top_right.x - HALF_INFECT_ZONE_LENGTH,
+                                          matrix_map[r][c].rectangle.bottom_left.y,
+                                          matrix_map[r][c].rectangle.top_right.x,
+                                          matrix_map[r][c].rectangle.bottom_left.y + HALF_INFECT_ZONE_LENGTH);
+            (*ghost_zones)[adjacent_id][rec_num[adjacent_id]] = ghost_zone;
+            rec_num[adjacent_id] += 1;
+          }
+        }
+
+        // search topLeft
+        if (r < BLOCK_NUM_PER_DIM - 1 && c > 0 && block_assignment[matrix_map[r + 1][c - 1].id] != rank_id) {
+          int adjacent_id = block_assignment[matrix_map[r + 1][c - 1].id];
+          // printf("topLeft relation at %d %d, %d, %d\n", r, c, rank_id, adjacent_id);
+          if (adjacent_id != block_assignment[matrix_map[r + 1][c].id] &&
+              adjacent_id != block_assignment[matrix_map[r][c - 1].id] &&
+              rank_id != block_assignment[matrix_map[r + 1][c].id] &&
+              rank_id != block_assignment[matrix_map[r][c - 1].id]) {
+            rectangle_t ghost_zone = init(matrix_map[r][c].rectangle.bottom_left.x,
+                                          matrix_map[r][c].rectangle.top_right.y - HALF_INFECT_ZONE_LENGTH,
+                                          matrix_map[r][c].rectangle.bottom_left.x + HALF_INFECT_ZONE_LENGTH,
+                                          matrix_map[r][c].rectangle.top_right.y);
+            (*ghost_zones)[adjacent_id][rec_num[adjacent_id]] = ghost_zone;
+            rec_num[adjacent_id] += 1;
+          }
+        }
+
+        // search bottomLeft
+        if (r > 0 && c > 0 && block_assignment[matrix_map[r - 1][c - 1].id] != rank_id) {
+          int adjacent_id = block_assignment[matrix_map[r - 1][c - 1].id];
+          //printf("bottomLEft relation at %d %d, %d, %d\n", r, c, rank_id, adjacent_id);
+          if (adjacent_id != block_assignment[matrix_map[r - 1][c].id] &&
+              adjacent_id != block_assignment[matrix_map[r][c - 1].id] &&
+              rank_id != block_assignment[matrix_map[r - 1][c].id] &&
+              rank_id != block_assignment[matrix_map[r][c - 1].id]) {
+            rectangle_t ghost_zone = init(matrix_map[r][c].rectangle.bottom_left.x,
+                                          matrix_map[r][c].rectangle.bottom_left.y,
+                                          matrix_map[r][c].rectangle.bottom_left.x + HALF_INFECT_ZONE_LENGTH,
+                                          matrix_map[r][c].rectangle.bottom_left.y + HALF_INFECT_ZONE_LENGTH);
+            (*ghost_zones)[adjacent_id][rec_num[adjacent_id]] = ghost_zone;
+            rec_num[adjacent_id] += 1;
+          }
+        }
+      }
+    }
+  }
+}
+
 int main(int argc, char* argv[]) {
 
   unsigned int seed = time(NULL);
@@ -62,6 +196,10 @@ int main(int argc, char* argv[]) {
     center_generate(TEST_SIZE, MATRIX_SIZE, CENTER_X, CENTER_Y, SIGMA, seed, &objects, &rectangles);
   } else {
     random_generate(TEST_SIZE, MATRIX_SIZE, seed, &objects, &rectangles);
+  }
+
+  if (rank_id == 0) {
+    object_statistic(objects, TEST_SIZE);
   }
 
   // count objects
@@ -138,7 +276,6 @@ int main(int argc, char* argv[]) {
   } else {
     MPI_Bcast(block_assignment, total_block, MPI_INT, 0, MPI_COMM_WORLD);
   }
-
   // rtree init
   r_tree_t* r_tree = NULL;
   if (use_rtree) {
@@ -147,12 +284,12 @@ int main(int argc, char* argv[]) {
 
   // get assigned objects
   int start_index = 0;
-  int block_size = 0;
+  int block_num = 0;
   while (block_assignment[start_index] != rank_id) {
     start_index++;
   }
-  while (start_index + block_size < total_block && block_assignment[start_index + block_size] == rank_id) {
-    block_size++;
+  while (start_index + block_num < total_block && block_assignment[start_index + block_num] == rank_id) {
+    block_num++;
   }
 
   object_t object_buffer[TEST_SIZE];
@@ -162,7 +299,7 @@ int main(int argc, char* argv[]) {
     int block_x, block_y;
     get_belonged_block(mid_point(rectangles[i]), BLOCK_NUM_PER_DIM, MATRIX_SIZE, &block_x, &block_y);
     int block_idx = matrix_map[block_x][block_y].id;
-    if (block_idx >= start_index && block_idx < start_index + block_size) {
+    if (block_idx >= start_index && block_idx < start_index + block_num) {
       object_buffer[size] = objects[i];
       rectangle_buffer[size] = rectangles[i];
       if (use_rtree) {
@@ -171,10 +308,136 @@ int main(int argc, char* argv[]) {
       size++;
     }
   }
-  printf("Worker %d is assigned block %d to %d and gathered %d objects\n", rank_id, start_index, start_index + block_size - 1, size);
+  printf("Worker %d is assigned block %d to %d and gathered %d objects\n", rank_id, start_index, start_index + block_num - 1, size);
 
 
-  for (size_t iter = 0; iter < ITER_TIME; iter++) {
+  int rec_num[world_size];
+  rectangle_t **ghost_rec_buf = NULL;
+
+  found_all_adjacent(matrix_map, block_assignment, rank_id, world_size, rec_num, &ghost_rec_buf);
+
+
+  /*
+  printf("Id: %d   ", rank_id);
+  for (int i = 0; i < world_size; i++) {
+    printf("%d ", rec_num[i]);
+  }
+  printf("\n");
+   */
+
+
+  int send_num[world_size];
+  rectangle_t send_rec_buf[world_size][TEST_SIZE];
+  int recv_size = 0;
+  rectangle_t recv_buf[TEST_SIZE];
+  int search_size = 0;
+  rectangle_t *search_pointer = NULL;
+
+  for (int iter = 0; iter < ITER_TIME; iter++) {
+    // ghost gathering
+    for (int i = 0; i < world_size; i++) {
+      // empty
+      send_num[i] = 0;
+      memset(send_rec_buf[i], 0, TEST_SIZE * sizeof(rectangle_t));
+
+      for (int j = 0; j < rec_num[i]; j++) {
+        if (use_rtree) {
+          search_size = search_infect_rec(r_tree->root, ghost_rec_buf[i][j], &search_pointer);
+        } else {
+          search_size = scan_search_infect_rec(object_buffer, rectangle_buffer, size, ghost_rec_buf[i][j], &search_pointer);
+        }
+
+        memcpy(send_rec_buf[i] + send_num[i], search_pointer, sizeof(rectangle_t) * search_size);
+        send_num[i] += search_size;
+        free(search_pointer);
+      }
+    }
+
+
+    // start to send and recv
+    recv_size = 0;
+    memset(recv_buf, 0, sizeof(rectangle_t) * TEST_SIZE);
+
+    for (int i = 0; i < world_size; i++) {
+      if (rec_num[i] > 0) {
+        if (i > rank_id) {
+          // recv and send
+          MPI_Status status;
+          MPI_Recv(recv_buf + recv_size, 4 * TEST_SIZE, MPI_FLOAT, i, 0, MPI_COMM_WORLD,
+                   &status);
+          int cur_recv_size;
+
+          MPI_Get_count(&status, MPI_FLOAT, &cur_recv_size);
+          cur_recv_size = cur_recv_size / 4;
+          recv_size += cur_recv_size;
+          // printf("ID: %d, received %d rec from %d in iter %d\n", rank_id, cur_recv_size, i, iter);
+
+          // printf("ID: %d, send %d rec to %d in iter %d\n", rank_id, send_num[i], i, iter);
+          MPI_Send(send_rec_buf[i], 4 * send_num[i], MPI_FLOAT, i, 0, MPI_COMM_WORLD);
+        } else if (i < rank_id) {
+          // printf("ID: %d, send %d rec to %d in iter %d\n", rank_id, send_num[i], i, iter);
+          MPI_Send(send_rec_buf[i], 4 * send_num[i], MPI_FLOAT, i, 0, MPI_COMM_WORLD);
+          // recv and send
+          MPI_Status status;
+          MPI_Recv(recv_buf + recv_size, 4 * TEST_SIZE, MPI_FLOAT, i, 0, MPI_COMM_WORLD,
+                   &status);
+          int cur_recv_size;
+
+          MPI_Get_count(&status, MPI_FLOAT, &cur_recv_size);
+          cur_recv_size = cur_recv_size / 4;
+          recv_size += cur_recv_size;
+          // printf("ID: %d, received %d rec from %d in iter %d\n", rank_id, cur_recv_size, i, iter);
+        } else {
+          printf("Error: don't need to send to self\n");
+        }
+      }
+    }
+
+
+    // start contact
+    for (int i = 0; i < size; i++) {
+      if (object_buffer[i].status == INFECTED) {
+        object_t **search_object = NULL;
+
+        size_t found;
+        if (use_rtree) {
+          found = search(r_tree->root, rectangle_buffer[i], &search_object);
+        } else {
+          found = scan_search(object_buffer, rectangle_buffer, size, rectangle_buffer[i], &search_object);
+        }
+
+        for (int k = 0; k < found; k++) {
+          contact(search_object[k], object_buffer + i, iter);
+        }
+        free(search_object);
+      }
+    }
+
+    object_t infected_object;
+    infected_object.status = INFECTED;
+
+    // contact ghost element
+    for (int i = 0; i < recv_size; i++) {
+      object_t **search_object = NULL;
+
+      size_t found;
+      if (use_rtree) {
+        found = search(r_tree->root, recv_buf[i], &search_object);
+      } else {
+        found = scan_search(object_buffer, rectangle_buffer, size, recv_buf[i], &search_object);
+      }
+
+      for (int k = 0; k < found; k++) {
+        contact(search_object[k], &infected_object, iter);
+      }
+
+      free(search_object);
+    }
+
+    //update status
+    status_update(object_buffer, size, iter);
+
+
     // move objects
     if (use_rtree) {
       random_move_rtree_objects(r_tree->root, STEP_SIZE, MATRIX_SIZE);
@@ -192,7 +455,7 @@ int main(int argc, char* argv[]) {
     if (use_rtree) {
       for (size_t i = 0; i < BLOCK_NUM_PER_DIM; i++) {
         for (size_t j = 0; j < BLOCK_NUM_PER_DIM; j++) {
-          if (matrix_map[i][j].id < start_index || matrix_map[i][j].id >= start_index + block_size) {
+          if (matrix_map[i][j].id < start_index || matrix_map[i][j].id >= start_index + block_num) {
             int worker = block_assignment[matrix_map[i][j].id];
             object_t* search_obj = NULL;
             rectangle_t* search_rec = NULL;
@@ -217,7 +480,7 @@ int main(int argc, char* argv[]) {
         int block_x, block_y;
         get_belonged_block(mid_point(rectangle_buffer[j]), BLOCK_NUM_PER_DIM, MATRIX_SIZE, &block_x, &block_y);
         int block_idx = matrix_map[block_x][block_y].id;
-        if (block_idx < start_index || block_idx >= start_index + block_size) {
+        if (block_idx < start_index || block_idx >= start_index + block_num) {
           int worker = block_assignment[block_idx];
           send_objs[worker][send_size[worker]] = object_buffer[j];
           send_rects[worker][send_size[worker]] = rectangle_buffer[j];
@@ -284,6 +547,11 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  for (int i = 0; i < world_size; i++) {
+    free(ghost_rec_buf[i]);
+  }
+  free(ghost_rec_buf);
+
   // gather objects
   if (rank_id == 0) {
     if (use_rtree) {
@@ -330,6 +598,7 @@ int main(int argc, char* argv[]) {
 
   if (rank_id == 0) {
     printf("Total time used: %f for proc: %d, size: %d\n", endTime - startTime, rank_id, size);
+    object_statistic(object_buffer, TEST_SIZE);
   }
   return 0;
 }

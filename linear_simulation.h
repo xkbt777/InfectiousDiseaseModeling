@@ -15,7 +15,7 @@
 #include <getopt.h>
 
 #define TEST_SIZE 1000
-#define MATRIX_SIZE 100
+#define MATRIX_SIZE 100.0f
 #define ITER_TIME 10
 #define STEP_SIZE 1.0f
 #define CENTER_X 50.0f

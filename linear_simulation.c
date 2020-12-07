@@ -75,6 +75,7 @@ int main(int argc, char* argv[]) {
         size_t found;
         if (use_rtree) {
           found = search(r_tree->root, rectangle_pointer[j], &search_object);
+
         } else {
           found = scan_search(object_pointer, rectangle_pointer, TEST_SIZE, rectangle_pointer[j], &search_object);
         }
