@@ -99,7 +99,6 @@ int main(int argc, char* argv[]) {
   int size = static_gather(object_buffer, objects, rectangle_buffer, rectangles, self_area, rank_id);
   free(objects);
   free(rectangles);
-  object_statistic(object_buffer, size);
 
   // build r_tree if use
   r_tree_t *r_tree = NULL;
@@ -328,16 +327,18 @@ int main(int argc, char* argv[]) {
       if (rank_id < world_size - 1) {
         rectangle_t up = init(0, self_area.top_right.y + HALF_INFECT_ZONE_LENGTH, MATRIX_SIZE, MATRIX_SIZE);
         up_send_size = search_with_rect(r_tree->root, up, &up_send_objs, &up_send_rects);
+
         for (size_t j = 0; j < up_send_size; j++) {
           delete(r_tree->root, up_send_objs + j, up_send_rects[j]);
         }
        } else {
          up_send_size = 0;
-      }
+       }
 
       if (rank_id > 0) {
         rectangle_t down = init(0, 0, MATRIX_SIZE, self_area.bottom_left.y - HALF_INFECT_ZONE_LENGTH);
         down_send_size = search_with_rect(r_tree->root, down, &down_send_objs, &down_send_rects);
+
         for (size_t j = 0; j < down_send_size; j++) {
           delete(r_tree->root, down_send_objs + j, down_send_rects[j]);
         }
@@ -398,28 +399,30 @@ int main(int argc, char* argv[]) {
           if (rank_id > 0) {
               MPI_Send(down_send_rects, 4 * down_send_size, MPI_FLOAT, rank_id - 1, 0, MPI_COMM_WORLD);
               MPI_Send(down_send_objs, 4 * down_send_size, MPI_INT, rank_id - 1, 0, MPI_COMM_WORLD);
-//              printf("%d sends %zu objects to %d at iteration %d\n", rank_id, down_send_size, rank_id - 1, iter);
+              // printf("%d sends %zu objects to %d at iteration %d\n", rank_id, down_send_size, rank_id - 1, iter);
 
               MPI_Status status;
               MPI_Recv(down_recv_buf, 4 * TEST_SIZE / world_size, MPI_FLOAT, rank_id - 1, 0, MPI_COMM_WORLD, &status);
               MPI_Get_count(&status, MPI_FLOAT, &down_recv_size);
               down_recv_size = down_recv_size / 4;
               MPI_Recv(down_recv_objs, 4 * down_recv_size, MPI_INT, rank_id - 1, 0, MPI_COMM_WORLD, &status);
-//            printf("%d receives %d objects to %d at iteration %d\n", rank_id, down_recv_size, rank_id - 1, iter);
+
+            // printf("%d receives %d objects to %d at iteration %d\n", rank_id, down_recv_size, rank_id - 1, iter);
+
           }
 
           // up send and recv
           if (rank_id < world_size - 1) {
               MPI_Send(up_send_rects, 4 * up_send_size, MPI_FLOAT, rank_id + 1, 0, MPI_COMM_WORLD);
               MPI_Send(up_send_objs, 4 * up_send_size, MPI_INT, rank_id + 1, 0, MPI_COMM_WORLD);
-//              printf("%d sends %zu objects to %d at iteration %d\n", rank_id, up_send_size, rank_id + 1, iter);
+              // printf("%d sends %zu objects to %d at iteration %d\n", rank_id, up_send_size, rank_id + 1, iter);
 
               MPI_Status status;
               MPI_Recv(up_recv_buf, 4 * TEST_SIZE / world_size, MPI_FLOAT, rank_id + 1, 0, MPI_COMM_WORLD, &status);
               MPI_Get_count(&status, MPI_FLOAT, &up_recv_size);
               up_recv_size = up_recv_size / 4;
               MPI_Recv(up_recv_objs, 4 * up_recv_size, MPI_INT, rank_id + 1, 0, MPI_COMM_WORLD, &status);
-//            printf("%d receives %d objects to %d at iteration %d\n", rank_id, up_recv_size, rank_id + 1, iter);
+            // printf("%d receives %d objects to %d at iteration %d\n", rank_id, up_recv_size, rank_id + 1, iter);
           }
       } else {
           // up recv and send
@@ -428,26 +431,26 @@ int main(int argc, char* argv[]) {
               MPI_Recv(up_recv_buf, 4 * TEST_SIZE / world_size, MPI_FLOAT, rank_id + 1, 0, MPI_COMM_WORLD, &status);
               MPI_Get_count(&status, MPI_FLOAT, &up_recv_size);
               up_recv_size = up_recv_size / 4;
-              MPI_Recv(down_recv_objs, 4 * up_recv_size, MPI_INT, rank_id + 1, 0, MPI_COMM_WORLD, &status);
-//            printf("%d receives %d objects to %d at iteration %d\n", rank_id, up_recv_size, rank_id + 1, iter);
+              MPI_Recv(up_recv_objs, 4 * up_recv_size, MPI_INT, rank_id + 1, 0, MPI_COMM_WORLD, &status);
+            // printf("%d receives %d objects to %d at iteration %d\n", rank_id, up_recv_size, rank_id + 1, iter);
 
               MPI_Send(up_send_rects, 4 * up_send_size, MPI_FLOAT, rank_id + 1, 0, MPI_COMM_WORLD);
               MPI_Send(up_send_objs, 4 * up_send_size, MPI_INT, rank_id + 1, 0, MPI_COMM_WORLD);
-//            printf("%d sends %zu objects to %d at iteration %d\n", rank_id, up_send_size, rank_id + 1, iter);
+            // printf("%d sends %zu objects to %d at iteration %d\n", rank_id, up_send_size, rank_id + 1, iter);
           }
 
           // down recv and send
           if (rank_id > 0) {
               MPI_Status status;
               MPI_Recv(down_recv_buf, 4 * TEST_SIZE / world_size, MPI_FLOAT, rank_id - 1, 0, MPI_COMM_WORLD, &status);
-              MPI_Get_count(&status, MPI_FLOAT, &down_recv_size);
-              down_recv_size = down_recv_size / 4;
+            MPI_Get_count(&status, MPI_FLOAT, &down_recv_size);
+            down_recv_size = down_recv_size / 4;
               MPI_Recv(down_recv_objs, 4 * down_recv_size, MPI_INT, rank_id - 1, 0, MPI_COMM_WORLD, &status);
-//            printf("%d receives %d objects to %d at iteration %d\n", rank_id, down_recv_size, rank_id - 1, iter);
+            // printf("%d receives %d objects to %d at iteration %d\n", rank_id, down_recv_size, rank_id - 1, iter);
 
               MPI_Send(down_send_rects, 4 * down_send_size, MPI_FLOAT, rank_id - 1, 0, MPI_COMM_WORLD);
               MPI_Send(down_send_objs, 4 * down_send_size, MPI_INT, rank_id - 1, 0, MPI_COMM_WORLD);
-//            printf("%d sends %d objects to %zu at iteration %d\n", rank_id, down_send_size, rank_id - 1, iter);
+            // printf("%d sends %d objects to %zu at iteration %d\n", rank_id, down_send_size, rank_id - 1, iter);
           }
       }
 
@@ -459,8 +462,10 @@ int main(int argc, char* argv[]) {
       // add received objects
       for (size_t i = 0; i < up_recv_size; i++) {
           if (use_rtree) {
+            if (up_recv_objs[i].id < TEST_SIZE && up_recv_objs[i].id >= 0) {
               insert(r_tree->root, up_recv_objs + i, up_recv_buf[i]);
               size++;
+            }
           } else {
               object_buffer[size] = up_recv_objs[i];
               rectangle_buffer[size++] = up_recv_buf[i];
@@ -468,8 +473,8 @@ int main(int argc, char* argv[]) {
       }
       for (size_t i = 0; i < down_recv_size; i++) {
           if (use_rtree) {
-              insert(r_tree->root, down_recv_objs + i, down_recv_buf[i]);
-              size++;
+            insert(r_tree->root, down_recv_objs + i, down_recv_buf[i]);
+            size++;
           } else {
               object_buffer[size] = down_recv_objs[i];
               rectangle_buffer[size++] = down_recv_buf[i];
@@ -487,6 +492,7 @@ int main(int argc, char* argv[]) {
       free(all_objects);
       free(all_rectangles);
     }
+    // printf("%d iter %d %d %d %d %d\n", rank_id, iter, up_recv_size, down_recv_size, up_send_size, down_send_size);
     // object_statistic(object_buffer, size);
   }
 
@@ -505,7 +511,7 @@ int main(int argc, char* argv[]) {
       }
     }
   } else {
-    memset(status_buffer, 0, BUF_SIZE * sizeof(int));
+    memset(status_buffer, 0, TEST_SIZE * sizeof(int));
     for (int i = 0; i < size; i++) {
       status_buffer[i] = object_buffer[i].status;
     }

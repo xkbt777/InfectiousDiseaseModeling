@@ -168,6 +168,7 @@ size_t search_with_rect(node_t *node, rectangle_t area, object_t **objects, rect
         // printf("Object ID: %ld\n", node->entries[i]->object->id);
         // printf("outcome: %d\n", intersect(node->entries[i]->rectangle, area));
         if (intersect(node->entries[i]->rectangle, area)) {
+            // printf("Object ID: %ld\n", node->entries[i]->object.id);
             objects_pointers[size_sum] = node->entries[i]->object;
             rectangle_pointers[size_sum] = node->entries[i]->rectangle;
             size_sum += 1;
