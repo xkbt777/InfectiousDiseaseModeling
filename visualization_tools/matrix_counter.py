@@ -15,6 +15,6 @@ for object in objects:
     ax.add_patch(Rectangle((float(object[3]), float(object[4])), float(object[5]) - float(object[3]), float(object[6]) - float(object[4]), edgecolor='g', facecolor='none'))
     cx = (float(object[3]) + float(object[5])) / 2.0
     cy = (float(object[4]) + float(object[6])) / 2.0
-    ax.annotate(object[0], (cx, cy), weight='bold', fontsize=6, ha='center', va='center')
+    ax.annotate(object[1], (cx, cy), weight='bold', fontsize=6, ha='center', va='center')
 
 plt.show()

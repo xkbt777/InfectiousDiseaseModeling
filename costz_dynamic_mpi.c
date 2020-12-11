@@ -143,9 +143,12 @@ int main(int argc, char* argv[]) {
 
   unsigned int seed = time(NULL);
   int opt;
-  int use_rtree = 0, use_normal = 0;
-  while ((opt = getopt(argc, argv, "rns:")) != -1) {
+  int use_rtree = 0, use_normal = 0, print = 0;
+  while ((opt = getopt(argc, argv, "prns:")) != -1) {
     switch (opt) {
+      case 'p':
+        print = 1;
+        break;
       case 'r':
         use_rtree = 1;
         break;
@@ -200,6 +203,9 @@ int main(int argc, char* argv[]) {
 
   if (rank_id == 0) {
     object_statistic(objects, TEST_SIZE);
+    if (print) {
+      object_to_file(objects, rectangles, TEST_SIZE, "object_data", MATRIX_SIZE);
+    }
   }
 
   // count objects
@@ -245,6 +251,7 @@ int main(int argc, char* argv[]) {
     MPI_Send(count_buffer, total_block, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
 
+
   // assign and broadcast
   int block_assignment[total_block];
   if (rank_id == 0) {
@@ -276,6 +283,26 @@ int main(int argc, char* argv[]) {
   } else {
     MPI_Bcast(block_assignment, total_block, MPI_INT, 0, MPI_COMM_WORLD);
   }
+
+  if (rank_id == 0 && print) {
+    // print counters
+    FILE *file = fopen("assignment", "w");
+
+    fprintf(file, "%f\n", MATRIX_SIZE);
+
+    for (int r = 0; r < BLOCK_NUM_PER_DIM; r++) {
+      for (int c = 0; c < BLOCK_NUM_PER_DIM; c++) {
+        fprintf(file, "%d,%d,%d,%.2f,%.2f,%.2f,%.2f\n", matrix_map[r][c].id, count_buffer[matrix_map[r][c].id],
+          block_assignment[matrix_map[r][c].id],
+          matrix_map[r][c].rectangle.bottom_left.x,
+          matrix_map[r][c].rectangle.bottom_left.y,
+          matrix_map[r][c].rectangle.top_right.x,
+          matrix_map[r][c].rectangle.top_right.y);
+      }
+    }
+    fclose(file);
+  }
+
   // rtree init
   r_tree_t* r_tree = NULL;
   if (use_rtree) {

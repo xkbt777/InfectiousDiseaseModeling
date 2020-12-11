@@ -36,4 +36,4 @@ costz_dynamic_mpi: costz_dynamic_mpi.c costz_dynamic_mpi.h
 	${MPICC} -o costz_dynamic_mpi costz_dynamic_mpi.c r_tree.o object.o rectangle.o util.o matrix.o ${CFLAG}
 
 clean:
-	rm -f *.o ${EXECS} object_data* tree matrix
+	rm -f *.o ${EXECS} object_data* tree matrix assignment

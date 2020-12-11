@@ -1,3 +1,5 @@
+colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:cyan', 'tab:red']
+
 import matplotlib.pyplot as plt
 import sys
 from matplotlib.patches import Rectangle
@@ -12,9 +14,10 @@ plt.axis([0, matrix_size, 0, matrix_size])
 ax = plt.gca()
 
 for object in objects:
-    ax.add_patch(Rectangle((float(object[3]), float(object[4])), float(object[5]) - float(object[3]), float(object[6]) - float(object[4]), edgecolor='g', facecolor='none'))
+    index = int(object[2])
+    ax.add_patch(Rectangle((float(object[3]), float(object[4])), float(object[5]) - float(object[3]), float(object[6]) - float(object[4]), edgecolor=colors[index], facecolor=colors[index], alpha=0.4))
     cx = (float(object[3]) + float(object[5])) / 2.0
     cy = (float(object[4]) + float(object[6])) / 2.0
-    ax.annotate(object[0], (cx, cy), weight='bold', fontsize=6, ha='center', va='center')
+    ax.annotate(index, (cx, cy), weight='bold', fontsize=6, ha='center', va='center', color=colors[index])
 
 plt.show()
