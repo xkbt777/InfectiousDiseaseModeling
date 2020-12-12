@@ -312,7 +312,7 @@ int main(int argc, char* argv[]) {
   // get assigned objects
   int start_index = 0;
   int block_num = 0;
-  while (block_assignment[start_index] != rank_id) {
+  while (start_index < total_block && block_assignment[start_index] != rank_id) {
     start_index++;
   }
   while (start_index + block_num < total_block && block_assignment[start_index + block_num] == rank_id) {
