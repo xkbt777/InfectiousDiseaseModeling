@@ -12,6 +12,10 @@ You could find our project proposal use the link [here](https://docs.google.com/
 
 You could find checkpoint report for this porject [here](https://docs.google.com/document/d/1BM-jaM9GXgmGWbn2sI7aPPbhSdBLyLSXRcmYJ2oPEDE/edit?usp=sharing).
 
+### Final Report
+
+Final report could be found in this [link](https://www.overleaf.com/read/wcshrqfybwbs). Also, we have a simple video pre on [here](https://youtu.be/exwPxSS-S1k).
+
 ## Work Completed
 After exploring the researches in infectious disease field, we dicided to provide a paralleled version of SIR model simulation based on distance between individuals in a specific area. Individuals are divided into suspicious, infected and recovered group and their contact are described by contact between individuals whose distance inbetween is less than a specific threshold. At each iteration, the individuals are moving based on random incentive or affected by individuals nearby and contact happened after each movement. The simulation could indicate the SIR number in a specific area after a number of iteration based on parameters, such as infectious rate or infectious distance.
 
