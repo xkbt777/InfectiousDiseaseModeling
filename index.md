@@ -57,16 +57,17 @@ Firstly, we let each worker count one part of all objects to find out which bloc
 * Finish mid-checkpoint report.
 * Design a dynamic task assignment for the MPI infectious model.
 
-#### Dec.2 - Dec.5
-* Implement dynamic task assignment (will be split into several more specific tasks and assigned after the design is settled).
+#### Dec.2 - Dec.4
+* Implement MPI parallel version using cost zones (object and matrix generators).
+* Implement MPI parallel version using cost zones (task counting and dynamic task assigning).
+
+#### Dec.5 - Dec.7
+* Implement MPI parallel version using cost zones (ghost objects collection and contact calculation).
+* Implement MPI parallel version using cost zones (objects movement and task reassignment).
+
+#### Dec.8 - Dec.12
 * Analyze the performance and scalability of MPI version infectious model.
-
-#### Dec.6 - Dec.7
-* Refine the MPI version infectious model if find some severe bottlenecks.
-
-#### Dec.7 - Dec.12
-* Apply social force model for people’s movement.
-* Add danger area concept into the calculation of the infectious rate.
+* Refine the MPI version infectious model if find some severe bottlenecks
 
 #### Dec.13 - Dec.14
 * Prepare for the poster session.
