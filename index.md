@@ -21,7 +21,10 @@ One big drawback of this problem is that linear scan is very inefficient and unn
 
 To parallel our calculation, we come up with a data-partition approach based on MPI to further optimize our simulation. We started with a static assignment that divided the target areas into P rectangles, each rectangle has the same width of target area, but only with partial height. These rectangles are aligned vertically so each rectangle only next to the rectangle above or below it. With this static assignment, each worker could build the R-tree locally. At contact stage, each worker need to communicate with the worker above and below to get the "ghost rectangle" which contains the individuals that may contact with the local individual. At movement stage, each worker need to communicate with the worker above and below to send and receive the individuals who leaves or moves into local area.
 
-## Schedule
+One problem is that in the real world, people are usually gathering together inside a area, instead of uniformly distributed. It is a common scenario when people's attention are focusing on one lecturer or a performer. So, we also provide another initial distribution that objects are centralized according to a normal distribution. We believe such initial distribution are much closer to the scenario in the real life. With this initial distribution, static assignment's performance is broken since pre-defined area would lead to significant work imbalance. So we implemented the cost zone approach mentioned in the lecture to dynamically generate an initial distribution according to the input object distribution.
+
+Firstly, we let each worker count one part of all objects to find out which block it belongs, and maintain the counter for each block locally. After this, our master process gathers all counter from all workers and do a cost zone assignment. Using the counter information, the master process knows the potential work at each block, so it balances it according to its counter by giving each worker different number of blocks, and send this assignment to all workers.
+
 ### Schedule
 
 #### Nov.5 - Nov.11
