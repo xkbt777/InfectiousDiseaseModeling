@@ -103,4 +103,4 @@ Firstly, we let each worker count one part of all objects to find out which bloc
 
 5. High-Concurrency Locking in R-Trees. [https://dsf.berkeley.edu/papers/vldb95-rtree.pdf](https://dsf.berkeley.edu/papers/vldb95-rtree.pdf)
 
-6. R-trees: a dynamic index structure for spatial searching. [https://dl.acm.org/doi/10.1145/971697.602266] (https://dl.acm.org/doi/10.1145/971697.602266)
+6. R-trees: a dynamic index structure for spatial searching. [https://dl.acm.org/doi/10.1145/971697.602266](https://dl.acm.org/doi/10.1145/971697.602266)
